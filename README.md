@@ -1,2 +1,3 @@
 # BotWSP
-Do you know BotWSP in Discord? No? Of course you don't! Well, here's the code for BotWSP anyways ¯\_(ツ)_/¯ !
+Why is there a README.md file here? No one will even see this repo
+
