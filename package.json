@@ -1,0 +1,37 @@
+{
+  "//1": "describes your app and its dependencies",
+  "//2": "https://docs.npmjs.com/files/package.json",
+  "//3": "updating this file will download and update your packages",
+  "name": "hello-express",
+  "version": "0.0.1",
+  "description": "A simple Node app built on Express, instantly up and running.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "discord-akairo": "^8.0.0",
+    "discord.js": "^12.1.1",
+    "node-fetch": "^2.6.0",
+    "http": "^0.0.0",
+    "querystring": "^0.2.0",
+    "convert-css-color-name-to-hex": "^0.1.1",
+    "uuid": "^7.0.3",
+    "string-similarity": "^4.0.0",
+    "img-color": "^1.0.2"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/hello-express"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
