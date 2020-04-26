@@ -13,12 +13,16 @@ class RoleCommand extends Command {
   }
 
   *args() {
-    let remove, color, name;
+    let remove, create, color, name;
     remove = yield {
       match: 'flag',
       flag: '--remove',
     };
-    if (!remove) {
+    create = yield {
+      match: 'flag',
+      flag: '--create',
+    };
+    if (create) {
       color = yield {
         type: 'string',
         match: 'content',
@@ -47,20 +51,23 @@ class RoleCommand extends Command {
         },
       };
     }
-    return { remove, name, color };
+    return { remove, create, name, color };
   }
 
   async exec(message, args) {
     const existingCustomRole = message.member.roles.cache.find((role) =>
-      /- .* -/.test(role.name)
+      /- .+ -/.test(role.name)
     );
     const customRoleLimit = message.guild.roles.cache.find(
       (role) => role.name === '- Custom Role Limit -'
     );
     const customRoleLog = message.guild.channels.cache.find(
-      (channel) => channel.name === 'custom-role-log'
+      (channel) => channel.name === 'role-log'
     );
-    if (args.remove) {
+    await message.channel.send(
+      `Remove flag: ${args.remove}\nCreate flag: ${args.create}`
+    );
+    if (args.remove && !args.create) {
       if (existingCustomRole) {
         await customRoleLog.send(
           createEmbed({
@@ -94,78 +101,101 @@ class RoleCommand extends Command {
           authorBool: true,
         })
       );
-    }
-    let roleColor = args.color.toLowerCase().replace(/\s/, '');
-    const roleName = args.name;
-    const highRoles = message.guild.roles.cache.filter(
-      (role) => role.position > message.member.roles.highest.position
-    );
-    if (isColorName(roleColor) || !isHexColor(roleColor)) {
-      roleColor = convert(args.color);
+    } else if (args.create && !args.remove) {
+      let roleColor = args.color.toLowerCase().replace(/\s/, '');
+      const roleName = args.name;
+      const highRoles = message.guild.roles.cache.filter(
+        (role) => role.position > message.member.roles.highest.position
+      );
+      if (isColorName(roleColor) || !isHexColor(roleColor)) {
+        roleColor = convert(args.color);
+      } else {
+        roleColor = 'DEFAULT';
+      }
+      const imitateBoolean = highRoles.some((role) => {
+        message.channel.send(
+          `${role.name
+            .toLowerCase()
+            .replace(/\s/, '')} == ${roleName
+            .toLowerCase()
+            .replace(/\s/, '')} = ${stringSimilarity.compareTwoStrings(
+            role.name.toLowerCase().replace(/\s/, ''),
+            roleName.toLowerCase().replace(/\s/, '')
+          )}`
+        );
+        return (
+          stringSimilarity.compareTwoStrings(
+            role.name.toLowerCase().replace(/\s/, ''),
+            roleName.toLowerCase().replace(/\s/, '')
+          ) !== 0.85
+        );
+      });
+      if (imitateBoolean) {
+        return message.channel.send(
+          createEmbed({
+            message: message,
+            color: '#F44336',
+            title: 'Whoops!',
+            description: "You can't make a custom role to imitate other roles!",
+            authorBool: true,
+          })
+        );
+      }
+      let role = await message.guild.roles.create({
+        data: {
+          name: `- ${roleName} -`,
+          color: roleColor,
+          position: customRoleLimit.position - 1,
+        },
+      });
+      await message.member.roles.add(role).catch(console.error);
+      message.channel.send(
+        createEmbed({
+          message: message,
+          color: roleColor,
+          title: 'There! Made your custom role for you.',
+          description: `Your custom role is <@&${role.id}> | ${role.name}`,
+          authorBool: true,
+        })
+      );
+      if (existingCustomRole) {
+        await customRoleLog.send(
+          createEmbed({
+            message: message,
+            color: existingCustomRole.color,
+            title: 'Replaced a custom role',
+            fields: [
+              { name: 'Old role name', value: existingCustomRole.name },
+              { name: 'Old role color', value: existingCustomRole.color },
+            ],
+            authorBool: true,
+          })
+        );
+        await existingCustomRole.delete();
+      }
+      return customRoleLog.send(
+        createEmbed({
+          message: message,
+          color: roleColor,
+          title: 'Created a custom role',
+          fields: [
+            { name: 'Role name', value: roleName },
+            { name: 'Role color', value: roleColor },
+          ],
+          authorBool: true,
+        })
+      );
     } else {
-      roleColor = 'DEFAULT';
-    }
-    const imitateBoolean = highRoles.some((role) =>
-      ((stringSimilarity.compareTwoStrings(
-        role.name.toLowerCase().replace(/\s/, ''),
-        roleName.toLowerCase().replace(/\s/, '')
-      )) !== 0.85)
-    );
-    if (imitateBoolean) {
       return message.channel.send(
         createEmbed({
           message: message,
           color: '#F44336',
           title: 'Whoops!',
-          description: "You can't make a custom role to imitate other roles!",
+          description: "You didn't input any flags or you put in both!",
           authorBool: true,
         })
       );
     }
-    let role = await message.guild.roles.create({
-      data: {
-        name: `- ${roleName} -`,
-        color: roleColor,
-        position: customRoleLimit.position - 1,
-      },
-    });
-    await message.member.roles.add(role).catch(console.error);
-    message.channel.send(
-      createEmbed({
-        message: message,
-        color: roleColor,
-        title: 'There! Made your custom role for you.',
-        description: `Your custom role is <@&${role.id}> | ${role.name}`,
-        authorBool: true,
-      })
-    );
-    if (existingCustomRole) {
-      await customRoleLog.send(
-        createEmbed({
-          message: message,
-          color: existingCustomRole.color,
-          title: 'Replaced a custom role',
-          fields: [
-            { name: 'Old role name', value: existingCustomRole.name },
-            { name: 'Old role color', value: existingCustomRole.color },
-          ],
-          authorBool: true,
-        })
-      );
-      await existingCustomRole.delete();
-    }
-    return customRoleLog.send(
-      createEmbed({
-        message: message,
-        color: roleColor,
-        title: 'Created a custom role',
-        fields: [
-          { name: 'Role name', value: roleName },
-          { name: 'Role color', value: roleColor },
-        ],
-        authorBool: true,
-      })
-    );
   }
 }
 
