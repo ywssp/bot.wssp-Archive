@@ -20,7 +20,7 @@ class MyClient extends AkairoClient {
   constructor() {
     super(
       {
-        ownerID: "411089957399035904"
+        ownerID: process.env.YWSSP
       },
       {
         disableEveryone: true
