@@ -24,7 +24,7 @@ class RoleCommand extends Command {
               message: message,
               title: 'Color',
               description:
-                'Enter a color, preferably a hex code from the site [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/colors_names.asp)',
+                'Enter a color, preferably a hex code from [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/colors_names.asp) or don\'t send a color to deafult the color to none',
               fields: [{ name: 'Example', value: '```#139FE4\nAlice Blue```' }],
               authorBool: true,
             }),
@@ -122,7 +122,7 @@ class RoleCommand extends Command {
         );
       }
       if (isColorName(roleColor) && !isHexColor(roleColor)) {
-        roleData[data][color] = convertCssColorNameToHex(roleColor);
+        roleData.data.color = convertCssColorNameToHex(roleColor);
       }
       let role = await message.guild.roles.create(roleData);
       await message.member.roles.add(role).catch(console.error);
@@ -169,6 +169,9 @@ class RoleCommand extends Command {
           color: '#F44336',
           title: 'Whoops!',
           description: "You didn't input any flags!",
+          fields: [
+            { name: 'Usage', value: 'Creating a custom role```y+customrole --create```It will automatically prompt you for the color and the name of the role\n\nRemoving a custom role```y+customrole --remove```It will automatically detect the custom role and remove it for you'}
+          ],
           authorBool: true,
         })
       );
