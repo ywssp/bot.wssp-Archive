@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const convert = require('convert-css-color-name-to-hex');
+const convertCssColorNameToHex = require('convert-css-color-name-to-hex');
 const createEmbed = require('../embedCreator.js');
 const stringSimilarity = require('string-similarity');
 const { isColorName, isHexColor } = require('css-color-checker');
@@ -13,45 +13,38 @@ class RoleCommand extends Command {
   }
 
   *args() {
-    let remove, create, color, name;
-    remove = yield {
-      match: 'flag',
-      flag: '--remove',
-    };
-    create = yield {
-      match: 'flag',
-      flag: '--create',
-    };
-    if (create) {
+    let color, name;
+    const flag = yield { type: 'string' };
+    if (flag === '--create') {
       color = yield {
         type: 'string',
-        match: 'content',
         prompt: {
           start: (message) =>
             createEmbed({
               message: message,
               title: 'Color',
               description:
-                'Enter a color, preferably a hex code from the site [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/color_picker.asp)',
+                'Enter a color, preferably a hex code from the site [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/colors_names.asp)',
+              fields: [{ name: 'Example', value: '```#139FE4\nAlice Blue```' }],
               authorBool: true,
             }),
         },
       };
       name = yield {
         type: 'string',
-        match: 'content',
         prompt: {
           start: (message) =>
             createEmbed({
               message: message,
               title: 'Name',
               description: 'Enter the name for the role',
+              fields: [{ name: 'Example', value: '```Role name```' }],
               authorBool: true,
             }),
         },
       };
     }
-    return { remove, create, name, color };
+    return { flag, name, color };
   }
 
   async exec(message, args) {
@@ -64,10 +57,7 @@ class RoleCommand extends Command {
     const customRoleLog = message.guild.channels.cache.find(
       (channel) => channel.name === 'role-log'
     );
-    await message.channel.send(
-      `Remove flag: ${args.remove}\nCreate flag: ${args.create}`
-    );
-    if (args.remove && !args.create) {
+    if (args.flag === '--remove') {
       if (existingCustomRole) {
         await customRoleLog.send(
           createEmbed({
@@ -101,35 +91,25 @@ class RoleCommand extends Command {
           authorBool: true,
         })
       );
-    } else if (args.create && !args.remove) {
+    } else if (args.flag === '--create') {
       let roleColor = args.color.toLowerCase().replace(/\s/, '');
       const roleName = args.name;
+      let roleData = {
+        data: {
+          name: `- ${roleName} -`,
+          position: customRoleLimit.position - 1,
+        },
+      };
       const highRoles = message.guild.roles.cache.filter(
         (role) => role.position > message.member.roles.highest.position
       );
-      if (isColorName(roleColor) || !isHexColor(roleColor)) {
-        roleColor = convert(args.color);
-      } else {
-        roleColor = 'DEFAULT';
-      }
-      const imitateBoolean = highRoles.some((role) => {
-        message.channel.send(
-          `${role.name
-            .toLowerCase()
-            .replace(/\s/, '')} == ${roleName
-            .toLowerCase()
-            .replace(/\s/, '')} = ${stringSimilarity.compareTwoStrings(
-            role.name.toLowerCase().replace(/\s/, ''),
-            roleName.toLowerCase().replace(/\s/, '')
-          )}`
-        );
-        return (
+      const imitateBoolean = highRoles.some(
+        (role) =>
           stringSimilarity.compareTwoStrings(
             role.name.toLowerCase().replace(/\s/, ''),
             roleName.toLowerCase().replace(/\s/, '')
-          ) !== 0.85
-        );
-      });
+          ) > 0.85
+      );
       if (imitateBoolean) {
         return message.channel.send(
           createEmbed({
@@ -141,13 +121,10 @@ class RoleCommand extends Command {
           })
         );
       }
-      let role = await message.guild.roles.create({
-        data: {
-          name: `- ${roleName} -`,
-          color: roleColor,
-          position: customRoleLimit.position - 1,
-        },
-      });
+      if (isColorName(roleColor) && !isHexColor(roleColor)) {
+        roleData[data][color] = convertCssColorNameToHex(roleColor);
+      }
+      let role = await message.guild.roles.create(roleData);
       await message.member.roles.add(role).catch(console.error);
       message.channel.send(
         createEmbed({
@@ -191,7 +168,7 @@ class RoleCommand extends Command {
           message: message,
           color: '#F44336',
           title: 'Whoops!',
-          description: "You didn't input any flags or you put in both!",
+          description: "You didn't input any flags!",
           authorBool: true,
         })
       );
