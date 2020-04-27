@@ -631,7 +631,7 @@ to attach them to the start of each source file to most effectively
 state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
-    I can't describe this bot
+    An open-source Discord bot.
     Copyright (C) 2020  ywssp
 
     This program is free software: you can redistribute it and/or modify

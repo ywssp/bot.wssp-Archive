@@ -3,3 +3,6 @@ views/
 database.sqlite
 server.js
 logChannels.js
+.glitch-assets
+shrinkwrap.yaml
+watch.json
