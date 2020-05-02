@@ -1,11 +1,6 @@
 const { Command } = require('discord-akairo');
-const suggestionTable = require('../suggestionTable.js');
-const {
-  suggestionDatabase: databaseChannel,
-  suggestionToDo: toDoChannel,
-  suggestionUpdates: updateChannel,
-} = require('../logChannels.js');
-const createEmbed = require('../embedCreator.js');
+const suggestionDatabase = require('../../Databases/suggestionDatabase.js');
+const createEmbed = require('../../Functions/EmbedCreator.js');
 const { v4: makeUuid } = require('uuid');
 
 class ActivityCommand extends Command {
@@ -20,25 +15,34 @@ class ActivityCommand extends Command {
   *args() {
     let suggestion, uuid, doability, use, description;
     const flag = yield { type: 'string' };
-    if (flag === '--add') {
-      suggestion = yield { match: 'rest' };
-    } else if (flag === '--claim') {
-      uuid = yield { type: 'string' };
-      doability = yield { type: 'string' };
-      use = yield { type: 'integer' };
-    } else if (flag === '--finish') {
-      uuid = yield { type: 'string' };
-      description = yield { match: 'rest' };
-    } else if (flag === '--remove') {
-      uuid = yield { type: 'string' };
-      description = yield { match: 'rest' };
-    } else if (flag === '--status') {
-      uuid = yield { type: 'string' };
+    switch (flag) {
+      case '--add':
+        suggestion = yield { match: 'rest' };
+        break;
+      case '--status':
+        uuid = yield { type: 'string' };
+        break;
+      case '--claim':
+        uuid = yield { type: 'string' };
+        doability = yield { type: 'string' };
+        break;
+      case '--finish':
+        uuid = yield { type: 'string' };
+        description = yield { match: 'rest' };
+        break;
+      case '--remove':
+        uuid = yield { type: 'string' };
+        description = yield { match: 'rest' };
+        break;
     }
-    return { flag, suggestion, uuid, doability, use, description };
+    return { flag, suggestion, uuid, doability, description };
   }
 
   async exec(message, args) {
+    if (message.guild.ownerID !== process.env.YWSSP) return;
+    const suggestion = await suggestionDatabase.findOne({
+      where: { uuid: args.uuid },
+    });
     //all free-to-use commands
     if (args.flag === '--add') {
       //seperate the name and description and put it on an array
@@ -47,7 +51,7 @@ class ActivityCommand extends Command {
         //make a UUID for the suggestion
         const uuid = makeUuid();
         //create a row on the database for the suggestion
-        await suggestionTable.create({
+        await suggestionDatabase.create({
           uuid: uuid,
           name: suggestion[0],
           description: suggestion[1],
@@ -56,26 +60,23 @@ class ActivityCommand extends Command {
           status: 'Not yet claimed',
         });
         //notify the author that the suggestion is submitted
-        message.author.send(
-          createEmbed({
-            message: message,
-            color: '#1565C0',
-            title: 'Done!',
-            description: `The suggestion has been sent to the database, and to ywssp.\nYou\'ll also need this UUID:\`\`\`${uuid}\`\`\``,
-            footer:
-              'You can do `y+suggest --status [uuid]` to check your suggestion! You could also do `y+suggest --remove [uuid]` to remove your suggestion',
-            authorBool: true,
-            footerBool: true,
-          })
-        );
+        createEmbed(message, {
+          color: 'defaultBlue',
+          title: 'Done!',
+          description: `The suggestion has been sent to the database, and to ywssp.\nYou\'ll also need this UUID:\`\`\`${uuid}\`\`\``,
+          footer:
+            'You can do `y+suggest --status [uuid]` to check your suggestion! You could also do `y+suggest --remove [uuid]` to remove your suggestion',
+          authorBool: true,
+          send: 'author',
+        });
+
         //delete original message
         message.delete();
         //send an embed on #suggestion-database
         const databaseEmbed = await this.client.channels.cache
-          .get(databaseChannel)
+          .get(process.env.SUGGESTIONDB)
           .send(
-            createEmbed({
-              message: message,
+            createEmbed(message, {
               fields: [
                 { name: 'Name', value: suggestion[0] },
                 { name: 'Description', value: suggestion[1] },
@@ -86,14 +87,13 @@ class ActivityCommand extends Command {
             })
           );
         //put the id of the embed on #suggestion-database and put it in the suggestion row
-        await suggestionTable.update(
+        await suggestionDatabase.update(
           { suggestion_id: databaseEmbed.id },
           { where: { uuid: uuid } }
         );
       } catch (e) {
-        const errorEmbed = createEmbed({
-          message: message,
-          color: '#F44336',
+        const errorEmbed = createEmbed(message, {
+          color: 'errorRed',
           title: 'Whoops!',
           description:
             "Something went wrong, but i don't know what went wrong. Just contact ywssp and he will fix it (Probably)",
@@ -105,57 +105,44 @@ class ActivityCommand extends Command {
           errorEmbed.setDescription(
             'Your suggestions name/description is already used!'
           );
-          return message.channel.send(errorEmbed);
         }
         return message.channel.send(errorEmbed);
       }
     } else if (args.flag === '--status') {
-      //get the suggestion row using the given uuid
-      const suggestion = await suggestionTable.findOne({
-        where: { uuid: args.uuid },
-      });
       //delete the message
       message.delete();
       //if a suggestion is found, then send the status of the suggestion
       if (suggestion) {
-        return message.author.send(
-          createEmbed({
-            message: message,
-            title: '#1565C0',
-            fields: [
-              { name: 'Name', value: suggestion.get('name') },
-              { name: 'Description', value: suggestion.get('description') },
-              { name: 'UUID', value: suggestion.get('uuid') },
-              { name: 'Status', value: suggestion.get('status') },
-              { name: 'Doability', value: suggestion.get('doability') },
-            ],
-            authorBool: true,
-          })
-        );
+        return createEmbed(message, {
+          title: 'defaultBlue',
+          fields: [
+            { name: 'Name', value: suggestion.get('name') },
+            { name: 'Description', value: suggestion.get('description') },
+            { name: 'UUID', value: suggestion.get('uuid') },
+            { name: 'Status', value: suggestion.get('status') },
+            { name: 'Doability', value: suggestion.get('doability') },
+          ],
+          authorBool: true,
+          send: 'author',
+        });
       }
       //if the suggestion is not found, then notify the author
       //send the suggestion status to the authors dms
-      return message.author.send(
-        createEmbed({
-          message: message,
-          color: '#F44336',
-          title: 'Whoops!',
-          description:
-            "The suggestion could not be found. It's probably:\nA. A typo,\nB. The suggestion is already finished,\nC. The suggstion is removed, or\nD. The suggestion didn't exist at all.",
-          authorBool: true,
-        })
-      );
+      return createEmbed(message, {
+        color: 'errorRed',
+        title: 'Whoops!',
+        description:
+          "The suggestion could not be found. It's probably:\nA. A typo,\nB. The suggestion is already finished,\nC. The suggstion is removed, or\nD. The suggestion didn't exist at all.",
+        authorBool: true,
+        send: 'author',
+      });
     } else if (
       args.flag === '--cancel' &&
       message.author.id !== process.env.YWSSP
     ) {
-      const suggestion = await suggestionTable.findOne({
-        where: { uuid: args.uuid },
-      });
       this.client.users.cache.get(suggestion.get('user_id')).send(
-        createEmbed({
-          message: message,
-          color: '#F44336',
+        createEmbed(message, {
+          color: 'errorRed',
           title: '._.',
           description:
             'Your suggestion has been removed. IDK why you want to do it but i did it.',
@@ -163,32 +150,26 @@ class ActivityCommand extends Command {
         })
       );
       const suggestionMessage = await this.client.channels.cache
-        .get(databaseChannel)
+        .get(process.env.SUGGESTIONDB)
         .messages.fetch(suggestion.get('suggestion_id'));
       suggestionMessage.delete();
       const todoMessage = await this.client.channels.cache
-        .get(toDoChannel)
+        .get(process.env.SUGGESTIONTODO)
         .messages.fetch(suggestion.get('todolist_id'));
       if (todoMessage) {
         todoMessage.delete();
       }
-      await suggestionTable.destroy({ where: { uuid: args.uuid } });
+      await suggestionDatabase.destroy({ where: { uuid: args.uuid } });
     }
     //after checking if the flag is --add or --status, check if the command user is ywssp
     else if (message.author.id !== process.env.YWSSP) {
-      message.author.send('No.');
-      message.delete();
+      return;
     } else if (args.flag === '--claim') {
       //update the suggestion row
-      await suggestionTable.update(
-        [{ doability: args.doability },
-        { status: 'Claimed' }],
+      await suggestionDatabase.update(
+        [{ doability: args.doability }, { status: 'Claimed' }],
         { where: { uuid: args.uuid } }
       );
-      //get the suggestion row for reference
-      const suggestion = await suggestionTable.findOne({
-        where: { uuid: args.uuid },
-      });
       //get the thumbnail for the suggestion
       const thumbnails = {
         Sure: [
@@ -206,9 +187,8 @@ class ActivityCommand extends Command {
       };
       //send a congratulatory embed to the suggestion creator
       this.client.users.cache.get(suggestion.get('user_id')).send(
-        createEmbed({
-          message: message,
-          color: '#1565C0',
+        createEmbed(message, {
+          color: 'defaultBlue',
           title: 'Nice!',
           description:
             'Your suggestion has been claimed! You can see your suggestion on #to-do-list.',
@@ -216,26 +196,26 @@ class ActivityCommand extends Command {
         })
       );
       //send the suggestion on #to-do-list
-      const todoEmbed = await this.client.channels.cache.get(toDoChannel).send(
-        createEmbed({
-          message: message,
-          color: thumbnails[args.doability][1],
-          thumbnail: thumbnails[args.doability][0],
-          fields: [
-            { name: 'Name', value: suggestion.get('name') },
-            { name: 'Description', value: suggestion.get('description') },
-          ]
-        })
-      );
+      const todoEmbed = await this.client.channels.cache
+        .get(process.env.SUGGESTIONTODO)
+        .send(
+          createEmbed(message, {
+            color: thumbnails[args.doability][1],
+            thumbnail: thumbnails[args.doability][0],
+            fields: [
+              { name: 'Name', value: suggestion.get('name') },
+              { name: 'Description', value: suggestion.get('description') },
+            ],
+          })
+        );
       todoEmbed.react('✅');
       //get the embed on #suggestion-database
       const suggestionMessage = await this.client.channels.cache
-        .get(databaseChannel)
+        .get(process.env.SUGGESTIONDB)
         .messages.fetch(suggestion.get('suggestion_id'));
       //edit the embed on #suggestion-database
       suggestionMessage.edit(
-        createEmbed({
-          message: message,
+        createEmbed(message, {
           fields: [
             { name: 'Name', value: suggestion.get('name') },
             { name: 'Description', value: suggestion.get('description') },
@@ -246,27 +226,22 @@ class ActivityCommand extends Command {
         })
       );
       //put the id of the embed on #to-do-list on the suggestion row
-      suggestionTable.update(
+      suggestionDatabase.update(
         { todoList_id: todoEmbed.id },
         { where: { uuid: args.uuid } }
       );
     } else if (args.flag === '--finish') {
-      const suggestion = await suggestionTable.findOne({
-        where: { uuid: args.uuid },
-      });
       this.client.users.cache.get(suggestion.get('user_id')).send(
-        createEmbed({
-          message: message,
-          color: '#1565C0',
+        createEmbed(message, {
+          color: 'defaultBlue',
           title: 'Yay!',
           description:
             'Your suggestion has been finished! You can see the update on #updates.',
           authorBool: true,
         })
       );
-      await this.client.channels.cache.get(updateChannel).send(
-        createEmbed({
-          message: message,
+      await this.client.channels.cache.get(process.env.SUGGESTIONUPDATES).send(
+        createEmbed(message, {
           title: 'New update!',
           description: args.description,
           fields: [
@@ -278,26 +253,22 @@ class ActivityCommand extends Command {
         })
       );
       const suggestionMessage = await this.client.channels.cache
-        .get(databaseChannel)
+        .get(process.env.SUGGESTIONDB)
         .messages.fetch(suggestion.get('suggestion_id'));
       suggestionMessage.delete();
       const todoMessage = await this.client.channels.cache
-        .get(toDoChannel)
+        .get(process.env.SUGGESTIONTODO)
         .messages.fetch(suggestion.get('todolist_id'));
       todoMessage.delete();
-      await suggestionTable.destroy({ where: { uuid: args.uuid } });
+      await suggestionDatabase.destroy({ where: { uuid: args.uuid } });
       //send update embed
     } else if (
       args.flag === '--cancel' &&
       message.author.id === process.env.YWSSP
     ) {
-      const suggestion = await suggestionTable.findOne({
-        where: { uuid: args.uuid },
-      });
       this.client.users.cache.get(suggestion.get('user_id')).send(
-        createEmbed({
-          message: message,
-          color: '#F44336',
+        createEmbed(message, {
+          color: 'errorRed',
           title: '._.',
           description:
             'Your suggestion has been removed by ywssp. He also left you a note.',
@@ -306,16 +277,17 @@ class ActivityCommand extends Command {
         })
       );
       const suggestionMessage = await this.client.channels.cache
-        .get(databaseChannel)
+        .get(process.env.SUGGESTIONDB)
         .messages.fetch(suggestion.get('suggestion_id'));
       suggestionMessage.delete();
+
       const todoMessage = await this.client.channels.cache
-        .get(toDoChannel)
+        .get(process.env.SUGGESTIONTODO)
         .messages.fetch(suggestion.get('todolist_id'));
       if (todoMessage) {
         todoMessage.delete();
       }
-      await suggestionTable.destroy({ where: { uuid: args.uuid } });
+      await suggestionDatabase.destroy({ where: { uuid: args.uuid } });
     }
   }
 }

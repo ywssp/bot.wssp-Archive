@@ -1,6 +1,6 @@
 const { Command } = require('discord-akairo');
 const convertCssColorNameToHex = require('convert-css-color-name-to-hex');
-const createEmbed = require('../embedCreator.js');
+const createEmbed = require('../../Functions/EmbedCreator.js');
 const stringSimilarity = require('string-similarity');
 const { isColorName, isHexColor } = require('css-color-checker');
 
@@ -20,11 +20,10 @@ class RoleCommand extends Command {
         type: 'string',
         prompt: {
           start: (message) =>
-            createEmbed({
-              message: message,
+            createEmbed(message, {
               title: 'Color',
               description:
-                'Enter a color, preferably a hex code from [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/colors_names.asp) or don\'t send a color to deafult the color to none',
+                "Enter a color, preferably a hex code from [HTML Color Codes](https://htmlcolorcodes.com/) or a color name on [w3schools](https://www.w3schools.com/colors/colors_names.asp) or don't send a color to deafult the color to none",
               fields: [{ name: 'Example', value: '```#139FE4\nAlice Blue```' }],
               authorBool: true,
             }),
@@ -34,8 +33,7 @@ class RoleCommand extends Command {
         type: 'string',
         prompt: {
           start: (message) =>
-            createEmbed({
-              message: message,
+            createEmbed(message, {
               title: 'Name',
               description: 'Enter the name for the role',
               fields: [{ name: 'Example', value: '```Role name```' }],
@@ -60,8 +58,7 @@ class RoleCommand extends Command {
     if (args.flag === '--remove') {
       if (existingCustomRole) {
         await customRoleLog.send(
-          createEmbed({
-            message: message,
+          createEmbed(message, {
             color: existingCustomRole.color,
             title: 'Removed a custom role',
             fields: [
@@ -71,26 +68,22 @@ class RoleCommand extends Command {
             authorBool: true,
           })
         );
-        await message.channel.send(
-          createEmbed({
-            message: message,
-            color: existingCustomRole.color,
-            title: 'Done!',
-            description: `Removed your custom role '<@&${existingCustomRole.id}> | ${existingCustomRole.name}'`,
-            authorBool: true,
-          })
-        );
+        await createEmbed(message, {
+          color: existingCustomRole.color,
+          title: 'Done!',
+          description: `Removed your custom role '<@&${existingCustomRole.id}> | ${existingCustomRole.name}'`,
+          authorBool: true,
+          send: 'channel',
+        });
         return existingCustomRole.delete();
       }
-      return message.channel.send(
-        createEmbed({
-          message: message,
-          color: '#F44336',
-          title: 'Whoops!',
-          description: "You don't even have a custom role!",
-          authorBool: true,
-        })
-      );
+      return createEmbed(message, {
+        color: 'errorRed',
+        title: 'Whoops!',
+        description: "You don't even have a custom role!",
+        authorBool: true,
+        send: 'channel',
+      });
     } else if (args.flag === '--create') {
       let roleColor = args.color.toLowerCase().replace(/\s/, '');
       const roleName = args.name;
@@ -111,34 +104,29 @@ class RoleCommand extends Command {
           ) > 0.85
       );
       if (imitateBoolean) {
-        return message.channel.send(
-          createEmbed({
-            message: message,
-            color: '#F44336',
-            title: 'Whoops!',
-            description: "You can't make a custom role to imitate other roles!",
-            authorBool: true,
-          })
-        );
+        return createEmbed(message, {
+          color: 'errorRed',
+          title: 'Whoops!',
+          description: "You can't make a custom role to imitate other roles!",
+          authorBool: true,
+          send: 'channel',
+        });
       }
       if (isColorName(roleColor) && !isHexColor(roleColor)) {
         roleData.data.color = convertCssColorNameToHex(roleColor);
       }
       let role = await message.guild.roles.create(roleData);
       await message.member.roles.add(role).catch(console.error);
-      message.channel.send(
-        createEmbed({
-          message: message,
-          color: roleColor,
-          title: 'There! Made your custom role for you.',
-          description: `Your custom role is <@&${role.id}> | ${role.name}`,
-          authorBool: true,
-        })
-      );
+      createEmbed(message, {
+        color: roleColor,
+        title: 'There! Made your custom role for you.',
+        description: `Your custom role is <@&${role.id}> | ${role.name}`,
+        authorBool: true,
+        send: 'channel',
+      });
       if (existingCustomRole) {
         await customRoleLog.send(
-          createEmbed({
-            message: message,
+          createEmbed(message, {
             color: existingCustomRole.color,
             title: 'Replaced a custom role',
             fields: [
@@ -151,8 +139,7 @@ class RoleCommand extends Command {
         await existingCustomRole.delete();
       }
       return customRoleLog.send(
-        createEmbed({
-          message: message,
+        createEmbed(message, {
           color: roleColor,
           title: 'Created a custom role',
           fields: [
@@ -163,18 +150,20 @@ class RoleCommand extends Command {
         })
       );
     } else {
-      return message.channel.send(
-        createEmbed({
-          message: message,
-          color: '#F44336',
-          title: 'Whoops!',
-          description: "You didn't input any flags!",
-          fields: [
-            { name: 'Usage', value: 'Creating a custom role```y+customrole --create```It will automatically prompt you for the color and the name of the role\n\nRemoving a custom role```y+customrole --remove```It will automatically detect the custom role and remove it for you'}
-          ],
-          authorBool: true,
-        })
-      );
+      return createEmbed(message, {
+        color: 'errorRed',
+        title: 'Whoops!',
+        description: "You didn't input any flags!",
+        fields: [
+          {
+            name: 'Usage',
+            value:
+              'Creating a custom role```y+customrole --create```It will automatically prompt you for the color and the name of the role\n\nRemoving a custom role```y+customrole --remove```It will automatically detect the custom role and remove it for you',
+          },
+        ],
+        authorBool: true,
+        send: 'channel',
+      });
     }
   }
 }
