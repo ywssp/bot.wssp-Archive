@@ -31,6 +31,9 @@ const Suggestions = sequelize.define('suggestions', {
   doability: {
     type: Sequelize.STRING
   },
+  use: {
+    type: Sequelize.INTEGER
+  },
   status: {
     type: Sequelize.STRING
   }

@@ -1,20 +1,18 @@
 const { Listener } = require('discord-akairo');
-const suggestionTable = require('../suggestionTable.js');
+const suggestionDatabase = require('../Databases/suggestionDatabase');
 
 class ReadyListener extends Listener {
   constructor() {
     super('ready', {
       emitter: 'client',
-      event: 'ready'
+      event: 'ready',
     });
   }
 
   exec() {
-    suggestionTable.sync();
-    this.client.user.setActivity(
-      'ywssp suffer from using sequelize databases',
-      { type: 'WATCHING' }
-    );
+    suggestionDatabase.sync();
+    console.log('Bot.wssp started in', Date.now())
+    this.client.user.setActivity('loading...');
     this.client.setInterval(() => {
       const activityArray = [
         //'watching' statuses
@@ -22,8 +20,6 @@ class ReadyListener extends Listener {
         'ywssp procrastinate',
         'anime',
         'paint dry',
-        'people build a house',
-        'an ad on my game that plays every 1 minute',
         //'playing' statuses
         'with a rubiks cube',
         'with lego',
@@ -31,20 +27,20 @@ class ReadyListener extends Listener {
         'Uno',
         //'listening' statuses
         'music',
-        'total silence'
+        'total silence',
       ];
       const pickedActivity = Math.floor(Math.random() * activityArray.length);
-      if (pickedActivity < 6) {
+      if (pickedActivity < 4) {
         this.client.user.setActivity(activityArray[pickedActivity], {
-          type: 'WATCHING'
+          type: 'WATCHING',
+        });
+      } else if (pickedActivity < 8) {
+        this.client.user.setActivity(activityArray[pickedActivity], {
+          type: 'PLAYING',
         });
       } else if (pickedActivity < 10) {
         this.client.user.setActivity(activityArray[pickedActivity], {
-          type: 'PLAYING'
-        });
-      } else if (pickedActivity < 12) {
-        this.client.user.setActivity(activityArray[pickedActivity], {
-          type: 'LISTENING'
+          type: 'LISTENING',
         });
       }
     }, 600000);
