@@ -1,24 +1,44 @@
 const createEmbed = require('./EmbedCreator.js');
 
-module.exports = async function musicCheck(message, withQueue, songNumber) {
-  const embedData = {
-    color: 'errorRed',
-    title: 'Whoops!',
-    authorBool: true,
-    send: 'channel',
+module.exports = function musicCheck(
+  checkType,
+  message,
+  withQueue,
+  songNumber,
+) {
+  const checks = {
+    vc: !message.member.voice.channel,
+    playing: !message.guild.musicData.songDispatcher,
+    queue: !message.guild.musicData.queue && withQueue,
+    songNumber:
+      songNumber < 1 &&
+      songNumber >= message.guild.musicData.queue.length &&
+      songNumber,
   };
-  if (!message.member.voice.channel)
-    embedData.description = "You aren't in a voice chat!";
-  if (!message.guild.musicData.songDispatcher)
-    embedData.description = 'There is no song playing!';
-  if (!message.guild.musicData.queue && withQueue)
-    embedData.description = 'There are no songs in the queue!';
-  if (
-    songNumber < 1 &&
-    songNumber >= message.guild.musicData.queue.length &&
-    songNumber
-  )
-    embedData.description = "That isn't a song number!";
-  if (embedData.description) return await createEmbed(message, embedData);
-  else return false;
+  if (checkType === 'boolean') {
+    if (
+      checks.vc ||
+      checks.playing ||
+      checks.queue ||
+      checks.songNumber
+    )
+      return true;
+    return false;
+  } else if (checkType === 'embed') {
+    const embedData = {
+      color: 'errorRed',
+      title: 'Whoops!',
+      authorBool: true,
+      send: 'channel',
+    };
+    if (checks.vc)
+      embedData.description = "You aren't in a voice chat!";
+    if (checks.playing)
+      embedData.description = 'There is no song playing!';
+    if (checks.queue)
+      embedData.description = 'There are no songs in the queue!';
+    if (checks.songNumber)
+      embedData.description = "That isn't a song number!";
+    if (embedData.description) return createEmbed(message, embedData);
+  }
 };

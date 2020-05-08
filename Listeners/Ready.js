@@ -11,12 +11,18 @@ class ReadyListener extends Listener {
 
   exec() {
     suggestionDatabase.sync();
-    console.log('Bot.wssp started in', Date.now())
-    this.client.user.setActivity('loading...');
+    const now = new Date;
+    console.log('Bot.wssp started in', now.toUTCString());
+    this.client.user.setActivity('Starting up...');
+    this.client.setTimeout(() => {
+      this.client.user.setActivity('ywssp fix some bugs', {
+        type: 'WATCHING',
+      });
+    }, 60000);
     this.client.setInterval(() => {
       const activityArray = [
         //'watching' statuses
-        'ywssp suffer from using sequelize databases',
+        'ywssp fix some bugs',
         'ywssp procrastinate',
         'anime',
         'paint dry',
@@ -29,7 +35,9 @@ class ReadyListener extends Listener {
         'music',
         'total silence',
       ];
-      const pickedActivity = Math.floor(Math.random() * activityArray.length);
+      const pickedActivity = Math.floor(
+        Math.random() * activityArray.length,
+      );
       if (pickedActivity < 4) {
         this.client.user.setActivity(activityArray[pickedActivity], {
           type: 'WATCHING',

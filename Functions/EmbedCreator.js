@@ -46,7 +46,7 @@ module.exports = async function embedCreator(message, embedObject) {
     createdEmbed.setTimestamp();
     createdEmbed.setFooter(
       embedObject.footer,
-      this.client.user.displayAvatarURL()
+      message.client.user.displayAvatarURL()
     );
   }
   if (embedObject.send) {

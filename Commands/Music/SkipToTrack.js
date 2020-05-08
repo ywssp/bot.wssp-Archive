@@ -28,7 +28,8 @@ class SkipToCommand extends Command {
   }
 
   async exec(message, args) {
-    if (musicCheck(message, true, args.songNumber)) return;
+    if (musicCheck('boolean', message, true, args.songNumber))
+      return musicCheck('embed', message, true, args.songNumber);
     message.guild.musicData.queue.splice(0, args.songNumber - 1);
     message.guild.musicData.songDispatcher.end();
     message.react('⏭');
