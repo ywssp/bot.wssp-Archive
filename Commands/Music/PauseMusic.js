@@ -10,7 +10,8 @@ class PauseCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message)) return;
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
     message.guild.musicData.songDispatcher.pause();
     message.react('⏸');
   }

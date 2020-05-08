@@ -10,7 +10,9 @@ class ResumeCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message)) message.guild.musicData.songDispatcher.resume();
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
+    message.guild.musicData.songDispatcher.resume();
     message.react('▶️');
   }
 }

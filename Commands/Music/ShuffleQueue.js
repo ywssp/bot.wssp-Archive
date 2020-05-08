@@ -10,7 +10,8 @@ class ShuffleCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message, true)) return;
+    if (musicCheck('boolean', message, true))
+      return musicCheck('embed', message, true);
     const shuffle = ([...arr]) => {
       let m = arr.length;
       while (m) {
@@ -19,7 +20,9 @@ class ShuffleCommand extends Command {
       }
       return arr;
     };
-    message.guild.musicData.queue = shuffle(message.guild.musicData.queue);
+    message.guild.musicData.queue = shuffle(
+      message.guild.musicData.queue,
+    );
     message.react('🔀');
   }
 }

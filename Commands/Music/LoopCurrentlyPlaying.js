@@ -10,8 +10,11 @@ class LoopCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message)) return;
-    message.guild.musicData.queue.unshift(message.guild.musicData.nowPlaying);
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
+    message.guild.musicData.queue.unshift(
+      message.guild.musicData.nowPlaying,
+    );
     message.react('🔂');
   }
 }

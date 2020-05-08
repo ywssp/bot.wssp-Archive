@@ -27,8 +27,10 @@ class RemoveCommand extends Command {
     return { songNumber };
   }
   async exec(message, args) {
-    if (musicCheck(message, true, args.songNumber)) return;
-    const songBeingRemoved = message.guild.musicData.queue[args.songNumber - 1];
+    if (musicCheck('boolean', message, true, args.songNumber))
+      return musicCheck('embed', message, true, args.songNumber);
+    const songBeingRemoved =
+      message.guild.musicData.queue[args.songNumber - 1];
     createEmbed(message, {
       color: 'errorRed',
       title: 'Removed song:',
