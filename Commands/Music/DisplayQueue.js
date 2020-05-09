@@ -9,8 +9,8 @@ class QueueCommand extends Command {
     });
   }
 
-  async exec(message, args) {
-    if (message.guild.musicData.queue.length == 0)
+  async exec(message) {
+    if (message.guild.musicData.queue.length === 0)
       return createEmbed(message, {
         color: 'errorRed',
         title: 'Whoops!',
@@ -18,24 +18,24 @@ class QueueCommand extends Command {
         authorBool: true,
         send: 'channel',
       });
-    const fieldArray = [],
-      fieldArrayArray = [];
-    message.guild.musicData.queue.map((obj) => {
+    let fieldArray = [];
+    let fieldArrayArray = [];
+    message.guild.musicData.queue.forEach((obj) => {
       fieldArray.push({
-        name: obj.title,
+        name: `${fieldArray.length + 1}. ${obj.title}`,
         value: `Requested by: ${obj.requester}\nLength: ${obj.duration}`,
       });
     });
-    let sections = Math.floor(fieldArray.length / 25);
+    let sections = Math.ceil(fieldArray.length / 25);
     while (sections) {
       fieldArrayArray.push(fieldArray.splice(0, 25));
       sections--;
     }
-    for (let _array of fieldArrayArray) {
-      await createEmbed(message, {
+    for (let _fieldArray of fieldArrayArray) {
+      createEmbed(message, {
         color: 'defaultBlue',
         title: 'Queue',
-        fields: _array,
+        fields: _fieldArray,
         authorBool: true,
         send: 'channel',
       });

@@ -7,7 +7,7 @@ module.exports = function musicCheck(
   songNumber,
 ) {
   const checks = {
-    vc: !message.member.voice.channel,
+    vc: !(message.member.voice.channel),
     playing: !message.guild.musicData.songDispatcher,
     queue: !message.guild.musicData.queue && withQueue,
     songNumber:
