@@ -7,14 +7,14 @@ assignees: ywssp
 
 ---
 
-**Describe the bug**
+### The bug
 A clear and concise description of what the bug is.
 
-**The error**
+### The error
 The error that displayed on the console, if there was an error
 
-**Expected outcome**
+### Expected outcome
 The outcome that you expected to happen.
 
-**Actual outcome**
+### Actual outcome
 The outcome that happened.
