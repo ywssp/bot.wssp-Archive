@@ -46,8 +46,8 @@ class PlayCommand extends Command {
               }),
             )
             .on('start', async function () {
-              message.guild.musicData.songDispatcher = dispatcher;
-              dispatcher.setVolume(message.guild.musicData.volume);
+              _message.guild.musicData.songDispatcher = dispatcher;
+              dispatcher.setVolume(_message.guild.musicData.volume);
               const videoEmbed = await createEmbed(_message, {
                 color: 'defaultBlue',
                 title: 'Now playing:',
@@ -72,24 +72,26 @@ class PlayCommand extends Command {
                 thumbnail: queue[0].thumbnail,
                 authorBool: true,
               });
-              if (queue[1])
-                videoEmbed.addField('Next Song:', queue[1].title);
-              message.channel.send(videoEmbed);
-              message.guild.musicData.nowPlaying = queue[0];
+              if (queue[1]) {
+                videoEmbed.addField('\u200B', '\u200B');
+                videoEmbed.addField('Next Song', queue[1].title);
+              }
+              _message.channel.send(videoEmbed);
+              _message.guild.musicData.nowPlaying = queue[0];
               return queue.shift();
             })
             .on('finish', function () {
               if (queue.length >= 1) {
-                return playSong(queue, message);
+                return playSong(queue, _message);
               } else {
-                message.guild.musicData.isPlaying = false;
-                message.guild.musicData.nowPlaying = null;
-                message.guild.musicData.songDispatcher = null;
-                return message.guild.me.voice.channel.leave();
+                _message.guild.musicData.isPlaying = false;
+                _message.guild.musicData.nowPlaying = null;
+                _message.guild.musicData.songDispatcher = null;
+                return _message.guild.me.voice.channel.leave();
               }
             })
             .on('error', function (e) {
-              createEmbed(message, {
+              createEmbed(_message, {
                 color: 'errorRed',
                 title: 'Whoops!',
                 description:
@@ -98,16 +100,16 @@ class PlayCommand extends Command {
                 send: 'channel',
               });
               console.error(e);
-              message.guild.musicData.queue.length = 0;
-              message.guild.musicData.isPlaying = false;
-              message.guild.musicData.nowPlaying = null;
-              message.guild.musicData.songDispatcher = null;
-              return message.guild.me.voice.channel.leave();
+              _message.guild.musicData.queue.length = 0;
+              _message.guild.musicData.isPlaying = false;
+              _message.guild.musicData.nowPlaying = null;
+              _message.guild.musicData.songDispatcher = null;
+              return _message.guild.me.voice.channel.leave();
             });
         })
         .catch(function (e) {
           console.error(e);
-          return message.guild.me.voice.channel.leave();
+          return _message.guild.me.voice.channel.leave();
         });
     }
     const unescapeHTML = (str) =>
@@ -122,7 +124,7 @@ class PlayCommand extends Command {
             '&quot;': '"',
           }[tag] || tag),
       );
-    function constructSongObj(video, voiceChannel, message) {
+    function constructSongObj(video, voiceChannel, _message) {
       let duration = formatDuration(video.duration);
       if (duration == '00:00') duration = 'Live Stream';
       return {
@@ -131,10 +133,11 @@ class PlayCommand extends Command {
         rawDuration: video.duration,
         duration,
         thumbnail: video.thumbnails.high.url,
-        requester: message.author.tag,
+        requester: _message.author.tag,
         voiceChannel,
       };
     }
+
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
       return createEmbed(message, {
@@ -176,6 +179,7 @@ class PlayCommand extends Command {
         value: unescapeHTML(videos[i].title),
       });
     }
+
     const songEmbed = await createEmbed(message, {
       color: 'defaultBlue',
       title: 'Music selection',
@@ -189,6 +193,7 @@ class PlayCommand extends Command {
       async (emoji) => await songEmbed.react(emoji),
     );
     let awaitReaction;
+
     try {
       awaitReaction = await songEmbed.awaitReactions(
         (reaction, user) => {
@@ -200,9 +205,10 @@ class PlayCommand extends Command {
         },
         { max: 1, time: 60000, errors: ['time'] },
       );
+      awaitReaction = awaitReaction.first().emoji.name;
+      songEmbed.delete();
     } catch (e) {
       {
-        songEmbed.delete();
         return createEmbed(message, {
           color: 'errorRed',
           title: 'Whoops!',
@@ -213,11 +219,9 @@ class PlayCommand extends Command {
       }
     }
 
-    const reaction = awaitReaction.first().emoji.name;
-    songEmbed.delete();
-    if (reaction === '🛑') return;
+    if (awaitReaction === '🛑') return;
     const videoIndex = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(
-      reaction,
+      awaitReaction,
     );
     let video;
     try {
@@ -245,6 +249,7 @@ class PlayCommand extends Command {
         send: 'channel',
       });
     }
+
     const songObj = constructSongObj(video, voiceChannel, message);
     message.guild.musicData.queue.push(songObj);
     if (!message.guild.musicData.isPlaying) {
