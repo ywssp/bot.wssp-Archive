@@ -4,39 +4,39 @@ const sequelize = new Sequelize('database', 'user', 'password', {
   host: 'localhost',
   dialect: 'sqlite',
   logging: false,
-  storage: 'database.sqlite'
+  storage: 'database.sqlite',
 });
 const Suggestions = sequelize.define('suggestions', {
   uuid: {
     type: Sequelize.STRING,
-    unique: true
+    unique: true,
   },
   name: {
     type: Sequelize.STRING,
-    unique: true
+    unique: true,
   },
   description: {
     type: Sequelize.STRING,
-    unique: true
+    unique: true,
   },
   user_id: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   suggestion_id: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   todolist_id: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
-  doability: {
-    type: Sequelize.STRING
+  priority: {
+    type: Sequelize.STRING,
   },
   use: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
   },
   status: {
-    type: Sequelize.STRING
-  }
+    type: Sequelize.STRING,
+  },
 });
 
 module.exports = Suggestions;

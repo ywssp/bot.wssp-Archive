@@ -15,6 +15,7 @@ class PlayCommand extends Command {
   *args() {
     const searchTerm = yield {
       type: 'string',
+      match: 'content',
       prompt: {
         start: (message) =>
           createEmbed(message, {
@@ -137,6 +138,23 @@ class PlayCommand extends Command {
         voiceChannel,
       };
     }
+    function checkTerm(term) {
+      if (
+        term.match(
+          /^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/,
+        )
+      )
+        return 'playlist';
+
+      if (
+        term.match(
+          /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/,
+        )
+      )
+        return 'video';
+
+      return 'search';
+    }
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
@@ -149,66 +167,95 @@ class PlayCommand extends Command {
         send: 'channel',
       });
     }
+    let vidToGet;
 
-    const videos = await youtube
-      .searchVideos(args.searchTerm, 5)
-      .catch(function () {
+    if (checkTerm(args.searchTerm) === 'playlist') {
+      const playlist = await youtube
+        .getPlaylist(query)
+        .catch(function () {
+          return createEmbed(message, {
+            color: 'errorRed',
+            title: 'Whoops!',
+            description: 'The playlist cannot be found!',
+            authorBool: true,
+            send: 'channel',
+          });
+        });
+      vidToGet = await playlist.getVideos().catch(function () {
         return createEmbed(message, {
           color: 'errorRed',
           title: 'Whoops!',
           description:
-            'There was an error while searching for a video!',
+            'An error occurred while getting one of the videos',
           authorBool: true,
           send: 'channel',
         });
       });
+    } else if (checkTerm(args.searchTerm) === 'video') {
+      const query = args.searchTerm
+        .replace(/(>|<)/gi, '')
+        .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+      vidToGet = query[2].split(/[^0-9a-z_\-]/i)[0];
+    } else if (checkTerm(args.searchTerm) === 'search') {
+      const videos = await youtube
+        .searchVideos(args.searchTerm, 5)
+        .catch(function () {
+          return createEmbed(message, {
+            color: 'errorRed',
+            title: 'Whoops!',
+            description:
+              'There was an error while searching for a video!',
+            authorBool: true,
+            send: 'channel',
+          });
+        });
 
-    if (videos.length < 5) {
-      return createEmbed(message, {
-        color: 'errorRed',
-        title: 'Whoops!',
-        description: 'No videos were found while searching',
+      if (videos.length < 5) {
+        return createEmbed(message, {
+          color: 'errorRed',
+          title: 'Whoops!',
+          description: 'No videos were found while searching',
+          authorBool: true,
+          send: 'channel',
+        });
+      }
+      const fieldArr = [];
+      for (let i = 0; i < videos.length; i++) {
+        fieldArr.push({
+          name: 'Song ' + (i + 1),
+          value: unescapeHTML(videos[i].title),
+        });
+      }
+
+      const songEmbed = await createEmbed(message, {
+        color: 'defaultBlue',
+        title: 'Music selection',
+        description:
+          'Pick a song from below using the reactions below',
+        fields: fieldArr,
         authorBool: true,
         send: 'channel',
       });
-    }
-    const fieldArr = [];
-    for (let i = 0; i < videos.length; i++) {
-      fieldArr.push({
-        name: 'Song ' + (i + 1),
-        value: unescapeHTML(videos[i].title),
-      });
-    }
 
-    const songEmbed = await createEmbed(message, {
-      color: 'defaultBlue',
-      title: 'Music selection',
-      description: 'Pick a song from below using the reactions below',
-      fields: fieldArr,
-      authorBool: true,
-      send: 'channel',
-    });
-
-    ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].forEach(
-      async (emoji) => await songEmbed.react(emoji),
-    );
-    let awaitReaction;
-
-    try {
-      awaitReaction = await songEmbed.awaitReactions(
-        (reaction, user) => {
-          return (
-            ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].some(
-              (emoji) => reaction.emoji.name === emoji,
-            ) && user.id === message.author.id
-          );
-        },
-        { max: 1, time: 60000, errors: ['time'] },
+      ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].forEach(
+        async (emoji) => await songEmbed.react(emoji),
       );
-      awaitReaction = awaitReaction.first().emoji.name;
-      songEmbed.delete();
-    } catch (e) {
-      {
+      let awaitReaction;
+
+      try {
+        awaitReaction = await songEmbed.awaitReactions(
+          (reaction, user) => {
+            return (
+              ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].some(
+                (emoji) => reaction.emoji.name === emoji,
+              ) && user.id === message.author.id
+            );
+          },
+          { max: 1, time: 60000, errors: ['time'] },
+        );
+        awaitReaction = awaitReaction.first().emoji.name;
+      } catch (e) {
+        songEmbed.delete();
         return createEmbed(message, {
           color: 'errorRed',
           title: 'Whoops!',
@@ -217,70 +264,101 @@ class PlayCommand extends Command {
           send: 'channel',
         });
       }
+
+      if (awaitReaction === '🛑') return;
+      const videoIndex = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(
+        awaitReaction,
+      );
+      vidToGet = videos[videoIndex].id;
+      songEmbed.delete();
     }
 
-    if (awaitReaction === '🛑') return;
-    const videoIndex = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(
-      awaitReaction,
-    );
-    let video;
-    try {
-      video = await youtube.getVideoByID(videos[videoIndex].id);
-    } catch (error) {
-      console.error(error);
-      return createEmbed(message, {
-        color: 'errorRed',
-        title: 'Whoops!',
-        description: 'An error occured while getting the video ID',
-        authorBool: true,
-        send: 'channel',
-      });
-    }
+    if (checkTerm(args.searchTerm) !== 'playlist') {
+      let video;
+      try {
+        video = await youtube.getVideoByID(vidToGet);
+      } catch (error) {
+        console.error(error);
+        return createEmbed(message, {
+          color: 'errorRed',
+          title: 'Whoops!',
+          description: 'An error occured while getting the video ID',
+          authorBool: true,
+          send: 'channel',
+        });
+      }
 
-    if (
-      video.duration.hours !== 0 ||
-      (video.duration.hours >= 1 && video.duration.minutes > 31)
-    ) {
-      return createEmbed(message, {
-        color: 'errorRed',
-        title: 'Whoops!',
-        description: "I don't support videos longer than 1 hour!",
-        authorBool: true,
-        send: 'channel',
-      });
-    }
+      if (
+        video.duration.hours !== 0 ||
+        (video.duration.hours >= 1 && video.duration.minutes > 31)
+      ) {
+        return createEmbed(message, {
+          color: 'errorRed',
+          title: 'Whoops!',
+          description: "I don't support videos longer than 1 hour!",
+          authorBool: true,
+          send: 'channel',
+        });
+      }
 
-    const songObj = constructSongObj(video, voiceChannel, message);
-    message.guild.musicData.queue.push(songObj);
-    if (!message.guild.musicData.isPlaying) {
-      message.guild.musicData.isPlaying = true;
-      playSong(message.guild.musicData.queue, message);
-    } else if (message.guild.musicData.isPlaying) {
-      return createEmbed(message, {
-        color: 'defaultBlue',
-        title: 'New song added to queue',
-        fields: [
+      const songObj = constructSongObj(video, voiceChannel, message);
+      message.guild.musicData.queue.push(songObj);
+      if (!message.guild.musicData.isPlaying) {
+        message.guild.musicData.isPlaying = true;
+        playSong(message.guild.musicData.queue, message);
+      } else if (message.guild.musicData.isPlaying) {
+        return createEmbed(message, {
+          color: 'defaultBlue',
+          title: 'New song added to queue',
+          fields: [
+            {
+              name: 'Title',
+              value: songObj.title,
+            },
+            {
+              name: 'Length',
+              value: songObj.duration,
+            },
+            {
+              name: 'URL',
+              value: songObj.url,
+            },
+            {
+              name: 'Requester',
+              value: songObj.requester,
+            },
+          ],
+          thumbnail: songObj.thumbnail,
+          authorBool: true,
+          send: 'channel',
+        });
+      }
+    } else {
+      for (let _video of vidToGet) {
+        const video = await _video.fetch();
+        message.guild.musicData.queue.push(
+          constructSongObj(video, voiceChannel),
+        );
+        if (!message.guild.musicData.isPlaying) {
+          message.guild.musicData.isPlaying = true;
+          playSong(message.guild.musicData.queue, message);
+        } else if (message.guild.musicData.isPlaying) {
           {
-            name: 'Title',
-            value: songObj.title,
-          },
-          {
-            name: 'Length',
-            value: songObj.duration,
-          },
-          {
-            name: 'URL',
-            value: songObj.url,
-          },
-          {
-            name: 'Requester',
-            value: songObj.requester,
-          },
-        ],
-        thumbnail: songObj.thumbnail,
-        authorBool: true,
-        send: 'channel',
-      });
+            return createEmbed(message, {
+              color: 'defaultBlue',
+              title: 'New playlist added to queue',
+              fields: [
+                {
+                  name: 'Title',
+                  value: playlist.title,
+                },
+              ],
+              authorBool: true,
+              send: 'channel',
+            });
+          }
+        }
+      }
     }
   }
 }
