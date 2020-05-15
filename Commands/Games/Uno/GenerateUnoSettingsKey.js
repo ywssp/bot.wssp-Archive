@@ -13,15 +13,15 @@ class UnoSettingsCommand extends Command {
   async exec(message) {
     //The settings that are used for the code
     let unoData = {
-      deck,
-      draw_4,
+      deck: '',
+      draw_4: '',
       draw_stack: 'off',
-      hide_card_no,
-      win_con,
-      win_con_limit,
-      turn_time,
-      wait_time,
-      turn_time_action,
+      hide_card_no: '',
+      win_con: '',
+      win_con_limit: '',
+      turn_time: '',
+      wait_time: '',
+      turn_time_action: '',
     };
     //The strings that are used for the final embed
     let unoSettings = {
@@ -49,17 +49,17 @@ class UnoSettingsCommand extends Command {
       turn_time_action: ['Draw card', 'Play random card'],
     };
 
-    createEmbed(message, {
+    await createEmbed(message, {
       color: 'defaultBlue',
       authorBool: true,
       description:
         'Every prompt has a timer of 60 seconds and will automatically pick the default when the time is up.',
-      send: true,
+      send:'channel'
     });
 
     //Deck
     {
-      const deckEmbed = createEmbed(message, {
+      const deckEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Deck',
@@ -81,7 +81,7 @@ class UnoSettingsCommand extends Command {
               'Use the Flip variant of the deck\n[Rules](https://www.ultraboardgames.com/uno/flip-game-rules.php)',
           },
         ],
-        send: true,
+        send: 'channel',
       });
       ['◻️', 'Ⓜ️', '🔄'].forEach(
         async (emoji) => await deckEmbed.react(emoji),
@@ -114,7 +114,7 @@ class UnoSettingsCommand extends Command {
 
     //+4
     {
-      const draw4Embed = createEmbed(message, {
+      const draw4Embed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Draw 4',
@@ -138,7 +138,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
             value: 'Remove challenging and allow illegal Draw 4s',
           },
         ],
-        send: true,
+        send: 'channel',
       });
       ['⛔️', '❌', '✅'].forEach(
         async (emoji) => await draw4Embed.react(emoji),
@@ -173,7 +173,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
 
     //Modifications
     {
-      const modEmbed = createEmbed(message, {
+      const modEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Mods',
@@ -199,7 +199,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
             value: 'Confirm your selection',
           },
         ],
-        send: true,
+        send: 'channel',
       });
       ['➕', '2️⃣', '🛎', '✅'].forEach(
         async (emoji) => await modEmbed.react(emoji),
@@ -248,11 +248,11 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
           unoSettings.hide_card_no = unoSettings.hide_card_no[0];
         }
       } catch (e) {
-        createEmbed(message, {
+        await createEmbed(message, {
           color: 'errorRed',
           authorBool: true,
           description: 'No modifications were saved',
-          send: true,
+          send: 'channel',
         });
       }
       modEmbed.delete();
@@ -260,7 +260,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
 
     //Win condition
     {
-      const winConditionEmbed = createEmbed(message, {
+      const winConditionEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Win condition',
@@ -297,7 +297,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
               'The player with the least points after a certain amount of rounds wins the game.\nPoints are awarded to the losing players',
           },
         ],
-        send: true,
+        send: 'channel',
       });
       ['💠', '🔢', '⬆️', '⬇️', '➡️', '⬅️'].forEach(
         async (emoji) => await winConditionEmbed.react(emoji),
@@ -349,7 +349,7 @@ If the challenge is wrong, then the challenger draws the 4 cards in the card, pl
         unoData.win_con === 'scorehigh' ||
         unoData.win_con === 'scorelow'
       ) {
-        const scoreLimitEmbed = createEmbed(message, {
+        const scoreLimitEmbed = await createEmbed(message, {
           color: 'defaultBlue',
           authorBool: true,
           title: 'Score cap',
@@ -364,7 +364,7 @@ Skip Everyone = 30 points
 Wild Card(UNO Flip) = 40
 Wild Card(UNO, UNO Mod), Wild Draw 4, Wild Draw 2(UNO Flip) Wild Mod(UNO Mod) = 50
 Wild Draw Color(UNO Flip) = 60`,
-          send: true,
+          send: 'channel',
         });
         let scoreLimitMessage;
         try {
@@ -391,12 +391,12 @@ Wild Draw Color(UNO Flip) = 60`,
         unoData.win_con === 'scoremost' ||
         unoData.win_con === 'scoreleast'
       ) {
-        const roundLimitEmbed = createEmbed(message, {
+        const roundLimitEmbed = await createEmbed(message, {
           color: 'defaultBlue',
           authorBool: true,
           title: 'Round limit',
           description: `Enter the round limit to use. The default is 3 rounds\nRange: 1 - 10`,
-          send: true,
+          send: 'channel',
         });
         let roundLimitMessage;
         try {
@@ -419,12 +419,12 @@ Wild Draw Color(UNO Flip) = 60`,
       }
       //win limit
       else if (unoData.win_con === 'winam') {
-        const winLimitEmbed = createEmbed(message, {
+        const winLimitEmbed = await createEmbed(message, {
           color: 'defaultBlue',
           authorBool: true,
           title: 'Win limit',
           description: `Enter the win limit to use. The default is 2 wins\nRange: 1 - 5`,
-          send: true,
+          send: 'channel',
         });
         let winLimitMessage;
         try {
@@ -449,12 +449,12 @@ Wild Draw Color(UNO Flip) = 60`,
 
     //Turn time
     {
-      const timeLimitEmbed = createEmbed(message, {
+      const timeLimitEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Turn time',
         description: `Enter the time of each turn in seconds. Default is 10\nRange: 5 - 30`,
-        send: true,
+        send: 'channel',
       });
       let timeLimitMessage;
       try {
@@ -477,12 +477,12 @@ Wild Draw Color(UNO Flip) = 60`,
 
     //Wait time
     {
-      const waitTimeEmbed = createEmbed(message, {
+      const waitTimeEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'Wait time',
         description: `Enter the time between each turn in seconds. This is the time where a player can challenge or catch another player. Default is 5\nRange: 5 - 15`,
-        send: true,
+        send: 'channel',
       });
       let waitTimeMessage;
       try {
@@ -505,7 +505,7 @@ Wild Draw Color(UNO Flip) = 60`,
 
     //AFK action
     {
-      const afkEmbed = createEmbed(message, {
+      const afkEmbed = await createEmbed(message, {
         color: 'defaultBlue',
         authorBool: true,
         title: 'AFK Action',
@@ -521,7 +521,7 @@ Wild Draw Color(UNO Flip) = 60`,
             value: "Play a random card in the player's hand",
           },
         ],
-        send: true,
+        send: 'channel',
       });
       ['⤵️', '⬆️'].forEach(
         async (emoji) => await afkEmbed.react(emoji),
@@ -579,7 +579,7 @@ Wild Draw Color(UNO Flip) = 60`,
         { name: 'Wait time', value: unoData.wait_time },
         { name: 'AFK Action', value: unoSettings.turn_time_action },
       ],
-      send: true,
+      send: 'channel',
     });
     await message.channel.send('Settings key: ');
     message.channel.send(encodedCode);

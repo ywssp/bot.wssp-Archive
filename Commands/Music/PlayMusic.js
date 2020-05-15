@@ -168,10 +168,11 @@ class PlayCommand extends Command {
       });
     }
     let vidToGet;
+    let playlistTitle;
 
     if (checkTerm(args.searchTerm) === 'playlist') {
       const playlist = await youtube
-        .getPlaylist(query)
+        .getPlaylist(args.searchTerm)
         .catch(function () {
           return createEmbed(message, {
             color: 'errorRed',
@@ -181,6 +182,7 @@ class PlayCommand extends Command {
             send: 'channel',
           });
         });
+      playlistTitle = playlist.title;
       vidToGet = await playlist.getVideos().catch(function () {
         return createEmbed(message, {
           color: 'errorRed',
@@ -337,7 +339,7 @@ class PlayCommand extends Command {
       for (let _video of vidToGet) {
         const video = await _video.fetch();
         message.guild.musicData.queue.push(
-          constructSongObj(video, voiceChannel),
+          constructSongObj(video, voiceChannel, message),
         );
         if (!message.guild.musicData.isPlaying) {
           message.guild.musicData.isPlaying = true;
@@ -350,7 +352,7 @@ class PlayCommand extends Command {
               fields: [
                 {
                   name: 'Title',
-                  value: playlist.title,
+                  value: playlistTitle,
                 },
               ],
               authorBool: true,
