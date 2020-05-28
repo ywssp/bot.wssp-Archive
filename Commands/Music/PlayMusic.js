@@ -257,7 +257,7 @@ class PlayCommand extends Command {
         );
         awaitReaction = awaitReaction.first().emoji.name;
       } catch (e) {
-        songEmbed.delete();
+        await songEmbed.delete();
         return createEmbed(message, {
           color: 'errorRed',
           title: 'Whoops!',
@@ -267,12 +267,12 @@ class PlayCommand extends Command {
         });
       }
 
+      await songEmbed.delete();
       if (awaitReaction === '🛑') return;
       const videoIndex = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(
         awaitReaction,
       );
       vidToGet = videos[videoIndex].id;
-      songEmbed.delete();
     }
 
     if (checkTerm(args.searchTerm) !== 'playlist') {
@@ -292,7 +292,7 @@ class PlayCommand extends Command {
 
       if (
         video.duration.hours !== 0 ||
-        (video.duration.hours >= 1 && video.duration.minutes > 31)
+        (video.duration.hours >= 1 && video.duration.minutes > 6)
       ) {
         return createEmbed(message, {
           color: 'errorRed',
