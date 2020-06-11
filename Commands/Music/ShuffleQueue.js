@@ -1,5 +1,6 @@
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
+const playSong = require('../../Functions/PlayMusic.js');
 
 class ShuffleCommand extends Command {
   constructor() {

@@ -1,9 +1,10 @@
 const { Command } = require('discord-akairo');
 const ytdl = require('ytdl-core');
-const createEmbed = require('../../Functions/EmbedCreator.js');
 const Youtube = require('simple-youtube-api');
 const youtube = new Youtube(process.env.YOUTUBE);
 const formatDuration = require('../../Functions/FormatDuration.js');
+const createEmbed = require('../../Functions/EmbedCreator.js');
+const playSong = require('../../Functions/PlayMusic.js');
 
 class PlayCommand extends Command {
   constructor() {
@@ -35,84 +36,6 @@ class PlayCommand extends Command {
     return { searchTerm };
   }
   async exec(message, args) {
-    function playSong(queue, _message) {
-      queue[0].voiceChannel
-        .join()
-        .then(function (connection) {
-          const dispatcher = connection
-            .play(
-              ytdl(queue[0].url, {
-                quality: 'highestaudio',
-                highWaterMark: 1024 * 1024 * 10,
-              }),
-            )
-            .on('start', async function () {
-              _message.guild.musicData.songDispatcher = dispatcher;
-              dispatcher.setVolume(_message.guild.musicData.volume);
-              const videoEmbed = await createEmbed(_message, {
-                color: 'defaultBlue',
-                title: 'Now playing:',
-                fields: [
-                  {
-                    name: 'Title',
-                    value: queue[0].title,
-                  },
-                  {
-                    name: 'Length',
-                    value: queue[0].duration,
-                  },
-                  {
-                    name: 'URL',
-                    value: queue[0].url,
-                  },
-                  {
-                    name: 'Requester',
-                    value: queue[0].requester,
-                  },
-                ],
-                thumbnail: queue[0].thumbnail,
-                authorBool: true,
-              });
-              if (queue[1]) {
-                videoEmbed.addField('\u200B', '\u200B');
-                videoEmbed.addField('Next Song', queue[1].title);
-              }
-              _message.channel.send(videoEmbed);
-              _message.guild.musicData.nowPlaying = queue[0];
-              return queue.shift();
-            })
-            .on('finish', function () {
-              if (queue.length >= 1) {
-                return playSong(queue, _message);
-              } else {
-                _message.guild.musicData.isPlaying = false;
-                _message.guild.musicData.nowPlaying = null;
-                _message.guild.musicData.songDispatcher = null;
-                return _message.guild.me.voice.channel.leave();
-              }
-            })
-            .on('error', function (e) {
-              createEmbed(_message, {
-                color: 'errorRed',
-                title: 'Whoops!',
-                description:
-                  'An error occured while playing the song',
-                authorBool: true,
-                send: 'channel',
-              });
-              console.error(e);
-              _message.guild.musicData.queue.length = 0;
-              _message.guild.musicData.isPlaying = false;
-              _message.guild.musicData.nowPlaying = null;
-              _message.guild.musicData.songDispatcher = null;
-              return _message.guild.me.voice.channel.leave();
-            });
-        })
-        .catch(function (e) {
-          console.error(e);
-          return _message.guild.me.voice.channel.leave();
-        });
-    }
     const unescapeHTML = (str) =>
       str.replace(
         /&amp;|&lt;|&gt;|&#39;|&quot;/g,
@@ -239,9 +162,10 @@ class PlayCommand extends Command {
         send: 'channel',
       });
 
-      ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].forEach(
-        async (emoji) => await songEmbed.react(emoji),
-      );
+      const emojiSet = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'];
+      for (let emoji of emojiSet) {
+        await songEmbed.react(emoji);
+      }
       let awaitReaction;
 
       try {
@@ -307,7 +231,7 @@ class PlayCommand extends Command {
       message.guild.musicData.queue.push(songObj);
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
-        playSong(message.guild.musicData.queue, message);
+        playSong(message);
       } else if (message.guild.musicData.isPlaying) {
         return createEmbed(message, {
           color: 'defaultBlue',
@@ -341,24 +265,24 @@ class PlayCommand extends Command {
         message.guild.musicData.queue.push(
           constructSongObj(video, voiceChannel, message),
         );
-        if (!message.guild.musicData.isPlaying) {
-          message.guild.musicData.isPlaying = true;
-          playSong(message.guild.musicData.queue, message);
-        } else if (message.guild.musicData.isPlaying) {
-          {
-            return createEmbed(message, {
-              color: 'defaultBlue',
-              title: 'New playlist added to queue',
-              fields: [
-                {
-                  name: 'Title',
-                  value: playlistTitle,
-                },
-              ],
-              authorBool: true,
-              send: 'channel',
-            });
-          }
+      }
+      if (!message.guild.musicData.isPlaying) {
+        message.guild.musicData.isPlaying = true;
+        playSong(message);
+      } else if (message.guild.musicData.isPlaying) {
+        {
+          return createEmbed(message, {
+            color: 'defaultBlue',
+            title: 'New playlist added to queue',
+            fields: [
+              {
+                name: 'Title',
+                value: playlistTitle,
+              },
+            ],
+            authorBool: true,
+            send: 'channel',
+          });
         }
       }
     }

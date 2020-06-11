@@ -19,7 +19,7 @@ class SkipToCommand extends Command {
             title: 'Skip to track',
             color: 'defaultBlue',
             description:
-              'Enter the number of the song you want to skip to\nTo see the queue, do `y+queue` or `y+queue --advanced`',
+              'Enter the number of the song you want to skip to\nTo see the queue, do `y+queue`',
             authorBool: true,
           }),
       },

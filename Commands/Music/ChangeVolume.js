@@ -18,7 +18,9 @@ class VolumeCommand extends Command {
           createEmbed(message, {
             title: 'Color',
             color: 'defaultBlue',
-            description: `Enter volume to set from 1-100\nCurrent volume: ${message.guild.musicData.volume}`,
+            description: `Enter volume to set from 1-100\nCurrent volume: ${
+              message.guild.musicData.volume * 50
+            }`,
             authorBool: true,
           }),
       },
@@ -26,7 +28,16 @@ class VolumeCommand extends Command {
     return { volume };
   }
   async exec(message, args) {
-    if (musicCheck(message)) return;
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
+    if (!0 < args.volume < 101)
+      return createEmbed(message, {
+        color: 'errorRed',
+        authorBool: true,
+        title: 'Whoops!',
+        description: 'The number you entered is not within range!',
+        send: 'channel',
+      });
     const volume = args.volume / 50;
     function volumeVisualisation(volume) {
       let volumeArray = [];

@@ -12,9 +12,9 @@ class LoopCommand extends Command {
   async exec(message) {
     if (musicCheck('boolean', message))
       return musicCheck('embed', message);
-    message.guild.musicData.queue.unshift(
-      message.guild.musicData.nowPlaying,
-    );
+    const songToLoop = message.guild.musicData.nowPlaying;
+    songToLoop.requester = message.author.tag;
+    message.guild.musicData.queue.unshift(songToLoop);
     message.react('🔂');
   }
 }
