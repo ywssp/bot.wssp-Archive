@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const app = express();
 app.get('/', (request, response) => {
-  let now = new Date;
+  let now = new Date();
   console.log(now.toUTCString() + ' Ping Received');
   response.sendStatus(200);
 });
@@ -40,7 +40,7 @@ class MyClient extends AkairoClient {
       },
       {
         disableEveryone: true,
-      }
+      },
     );
     this.commandHandler = new CommandHandler(this, {
       directory: './Commands/',

@@ -13,8 +13,8 @@ class LeaveCommand extends Command {
     if (musicCheck('boolean', message, true))
       return musicCheck('embed', message, true);
     message.react('🛑');
+    message.guild.musicData.queue = [];
     message.guild.musicData.songDispatcher.end();
-    message.guild.musicData.queue.length = 0;
   }
 }
 

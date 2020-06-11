@@ -5,3 +5,4 @@ server.js
 .glitch-assets
 shrinkwrap.yaml
 watch.json
+build/
