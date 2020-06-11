@@ -4,8 +4,6 @@ This is an open-source discord bot that you can invite and even suggest commands
 
 ## .env contents
 
----
-
 ### process.env.TOKEN
 
 The token of the bot
@@ -22,8 +20,6 @@ The api key of the bot
 Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js)
 
 ## NPM Packages and services used
-
----
 
 ### Discord
 
@@ -44,7 +40,5 @@ Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js)
 - Other npm packages on [package.json](package.json)
 
 ## Credits
-
----
 
 Part of the code of the commands on [Commands/Music](./Commands/Music/) are from [galnir/Master-Bot](https://github.com/galnir/Master-Bot). The code is altered so that it uses [Akairo](https://discord-akairo.github.io/#/)
