@@ -4,7 +4,6 @@ const Youtube = require('simple-youtube-api');
 const youtube = new Youtube(process.env.YOUTUBE);
 const formatDuration = require('../../Functions/FormatDuration.js');
 const createEmbed = require('../../Functions/EmbedCreator.js');
-const playSong = require('../../Functions/PlayMusic.js');
 
 class PlayCommand extends Command {
   constructor() {
