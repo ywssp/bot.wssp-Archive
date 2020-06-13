@@ -2,7 +2,7 @@
 
 This is an open-source discord bot that you can invite and even suggest commands to! Pretty neat huh?
 
-UPDATE: A guide on cetting up a bot using this repo is being made. IDK when it will be finished
+UPDATE: A guide on setting up a bot using this repo is being made. IDK when it will be finished
 
 ## .env contents
 
