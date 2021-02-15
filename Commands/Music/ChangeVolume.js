@@ -30,7 +30,7 @@ class VolumeCommand extends Command {
   async exec(message, args) {
     if (musicCheck('boolean', message))
       return musicCheck('embed', message);
-    if (!0 < args.volume < 101)
+    if (!(0 < args.volume < 101))
       return createEmbed(message, {
         color: 'errorRed',
         authorBool: true,

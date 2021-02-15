@@ -1,8 +1,1 @@
-public/
-views/
-database.sqlite
-server.js
-.glitch-assets
-shrinkwrap.yaml
-watch.json
-build/
+Others/Activities.js

@@ -4,23 +4,28 @@ const createEmbed = require('../../Functions/EmbedCreator.js');
 class TestCommand extends Command {
   constructor() {
     super('test', {
-      aliases: ['test'],
+      aliases: ['test','ping', 'pong', 'foo'],
       category: 'Testing',
     });
   }
 
-  exec(message) {
+  async exec(message) {
     const phrases = [
       'Bot works. Continue using commands',
-      'Yes?',
+      'Present',
       'Status: Online',
-      'Mic Test Mic Test 123',
+      'Mic Test',
     ];
+    const sent = await message.channel.send('Loading...');
+    const timeDiff =
+      (sent.editedAt || sent.createdAt) -
+      (message.editedAt || message.createdAt);
+    sent.delete();
     const num = Math.floor(Math.random() * phrases.length);
     return createEmbed(message, {
       color: 'defaultBlue',
       authorBool: true,
-      description: phrases[num],
+      description: phrases[num] + '/n/n🔂 **RTT**: ${timeDiff} ms',
       send: 'channel',
     });
   }

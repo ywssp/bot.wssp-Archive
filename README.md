@@ -2,24 +2,24 @@
 
 This is an open-source discord bot that you can invite and even suggest commands to! Pretty neat huh?
 
-UPDATE: A guide on setting up a bot using this repo is being made. IDK when it will be finished
+UPDATE: I'm currently at school, so i cant fix bugs all the time.
 
 ## .env contents
 
 ### process.env.TOKEN
 
 The token of the bot
-Used in [start.js](start.js)
+Used in [start.js](start.js).
 
-### process.env.YWSSP
+### process.env.OWNER
 
-The user id of the owner
-Used in [start.js](start.js), [ApplyForMod.js](./Commands/Chill-Community-specific/ApplyForMod.js), and every command in [Commands/Suggestions](./Commands/Suggestions)
+The user id of the owner/s
+Used in [start.js](start.js).
 
 ### process.env.YOUTUBE
 
 The api key of the bot
-Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js)
+Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js).
 
 ## NPM Packages and services used
 
@@ -28,14 +28,9 @@ Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js)
 - [Discord.js](https://discord.js.org/#/)
 - [discord-akairo](https://discord-akairo.github.io/#/)
 
-### Databases
-
-- [sqlite](https://www.npmjs.com/package/sqlite)
-- [Sequelize](https://sequelize.org/)
-
 ### Services
 
-- [Glitch](https://glitch.com/)
+- [Repl.it](https://repl.it/)
 
 ### Others
 
