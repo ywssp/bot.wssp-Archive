@@ -16,7 +16,7 @@ class DogCommand extends Command {
       .then((resp) => resp.message)
       .catch((err) => console.log(err));
     createEmbed(message, {
-      color: 'defaultBlue',
+      color: 'dBlue',
       title: 'A random dog to cheer you up!',
       image: dog,
       footer: 'This command uses https://dog.ceo/api/breeds/image/random',

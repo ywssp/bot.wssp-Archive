@@ -5,7 +5,7 @@ const musicCheck = require('../../Functions/MusicCheck.js');
 class VolumeCommand extends Command {
   constructor() {
     super('volume', {
-      aliases: ['volume'],
+      aliases: ['volume', 'vol'],
       category: 'Music',
     });
   }
@@ -16,8 +16,8 @@ class VolumeCommand extends Command {
       prompt: {
         start: (message) =>
           createEmbed(message, {
-            title: 'Color',
-            color: 'defaultBlue',
+            title: 'Volume',
+            color: 'qYellow',
             description: `Enter volume to set from 1-100\nCurrent volume: ${
               message.guild.musicData.volume * 50
             }`,
@@ -30,9 +30,9 @@ class VolumeCommand extends Command {
   async exec(message, args) {
     if (musicCheck('boolean', message))
       return musicCheck('embed', message);
-    if (!(0 < args.volume < 101))
+    if (args.volume < 1||args.volume > 100)
       return createEmbed(message, {
-        color: 'errorRed',
+        color: 'eRed',
         authorBool: true,
         title: 'Whoops!',
         description: 'The number you entered is not within range!',
@@ -53,7 +53,7 @@ class VolumeCommand extends Command {
     message.guild.musicData.volume = volume;
     message.guild.musicData.songDispatcher.setVolume(volume);
     createEmbed(message, {
-      color: 'successGreen',
+      color: 'fGreen',
       title: 'Done!',
       description: 'Changed the volume!',
       fields: [

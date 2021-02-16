@@ -12,6 +12,15 @@ class UrbanCommand extends Command {
         {
           id: 'query',
           match: 'content',
+          prompt: {
+        start: message =>
+          createEmbed(message, {
+            title: 'Search',
+            color: 'qYellow', 
+            description: 'Enter a search term',
+            authorBool: true,
+          }),
+      },
         },
       ],
     });
@@ -21,7 +30,7 @@ class UrbanCommand extends Command {
     const trim = (str, max) =>
       str.length > max ? `${str.slice(0, max - 3)}...` : str;
     const embed = createEmbed(message, {
-      color: 'errorRed',
+      color: 'eRed',
       authorBool: true,
       title: 'Whoops!',
       description: 'You need to supply a search term!',
@@ -44,7 +53,7 @@ class UrbanCommand extends Command {
 
     const [answer] = list;
     createEmbed(message, {
-      color: 'defaultBlue',
+      color: 'dBlue',
       authorBool: true,
       title: answer.word,
       url: answer.permalink,

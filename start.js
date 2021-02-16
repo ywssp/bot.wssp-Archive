@@ -18,7 +18,7 @@ Structures.extend('Guild', (Guild) => {
       this.musicData = {
         queue: [],
         isPlaying: false,
-        volume: 1,
+        volume: 0.8,
         songDispatcher: null,
       };
     }

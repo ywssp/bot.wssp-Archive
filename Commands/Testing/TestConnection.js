@@ -23,9 +23,9 @@ class TestCommand extends Command {
     sent.delete();
     const num = Math.floor(Math.random() * phrases.length);
     return createEmbed(message, {
-      color: 'defaultBlue',
+      color: 'dBlue',
       authorBool: true,
-      description: phrases[num] + '/n/n🔂 **RTT**: ${timeDiff} ms',
+      description: phrases[num] + `\n\n\n🔂RTT: ${timeDiff} ms`,
       send: 'channel',
     });
   }

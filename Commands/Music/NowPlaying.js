@@ -5,7 +5,7 @@ const visualiseDuration = require('../../Functions/GenerateDurationVisualisation
 class NowPlayingCommand extends Command {
   constructor() {
     super('np', {
-      aliases: ['np'],
+      aliases: ['np', 'playing', 'nowplaying'],
       category: 'Music',
     });
   }
@@ -16,7 +16,7 @@ class NowPlayingCommand extends Command {
       !message.guild.musicData.nowPlaying
     ) {
       return createEmbed(message, {
-        color: 'errorRed',
+        color: 'eRed',
         title: 'Whoops!',
         description: 'There is no song playing!',
         authorBool: true,
@@ -40,6 +40,10 @@ class NowPlayingCommand extends Command {
         {
           name: 'Title',
           value: video.title,
+        },
+        {
+          name: 'Channel',
+          value: video.channelName,
         },
         {
           name: 'Length',

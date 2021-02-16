@@ -4,7 +4,7 @@ const musicCheck = require('../../Functions/MusicCheck.js');
 class LoopCommand extends Command {
   constructor() {
     super('loop', {
-      aliases: ['loop'],
+      aliases: ['loop', 'repeat'],
       category: 'Music',
     });
   }

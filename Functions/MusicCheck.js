@@ -26,7 +26,7 @@ module.exports = function musicCheck(
     return false;
   } else if (checkType === 'embed') {
     const embedData = {
-      color: 'errorRed',
+      color: 'eRed',
       title: 'Whoops!',
       authorBool: true,
       send: 'channel',

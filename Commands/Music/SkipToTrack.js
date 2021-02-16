@@ -17,9 +17,9 @@ class SkipToCommand extends Command {
         start: (message) =>
           createEmbed(message, {
             title: 'Skip to track',
-            color: 'defaultBlue',
+            color: 'qYellow',
             description:
-              'Enter the number of the song you want to skip to\nTo see the queue, do `y+queue`',
+              'Enter the number of the song you want to skip to\nTo see the queue, do `y queue`',
             authorBool: true,
           }),
       },

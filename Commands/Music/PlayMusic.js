@@ -8,7 +8,7 @@ const createEmbed = require('../../Functions/EmbedCreator.js');
 class PlayCommand extends Command {
   constructor() {
     super('play', {
-      aliases: ['play'],
+      aliases: ['play', 'add'],
       category: 'Music',
     });
   }
@@ -20,12 +20,16 @@ class PlayCommand extends Command {
         start: message =>
           createEmbed(message, {
             title: 'Search',
+            color: 'qYellow', 
             description: 'Enter a search term or a youtube link',
             fields: [
               {
                 name: 'Example',
                 value:
-                  '```Search term\nhttps://youtu.be/bbJkJ8T6ZBQ```',
+                  `\`\`\`https://youtu.be/bbJkJ8T6ZBQ | Plays the linked video
+Search Term | Lists 5 videos from the query to choose from
+-l 'search term' | Plays the first video from the query
+https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos inside the playlist on the queue\`\`\``,
               },
             ],
             authorBool: true,
@@ -34,6 +38,7 @@ class PlayCommand extends Command {
     };
     return { searchTerm };
   }
+
   async exec(message, args) {
     async function playSong(message) {
       const song = message.guild.musicData.queue[0];
@@ -51,12 +56,16 @@ class PlayCommand extends Command {
               message.guild.musicData.songDispatcher = dispatcher;
               dispatcher.setVolume(message.guild.musicData.volume);
               const videoEmbed = await createEmbed(message, {
-                color: 'defaultBlue',
+                color: 'dBlue',
                 title: 'Now playing:',
                 fields: [
                   {
                     name: 'Title',
                     value: song.title,
+                  },
+                  {
+                    name: 'Channel',
+                    value: song.channelName,
                   },
                   {
                     name: 'Length',
@@ -97,7 +106,7 @@ class PlayCommand extends Command {
             })
             .on('error', function(e) {
               createEmbed(message, {
-                color: 'errorRed',
+                color: 'eRed',
                 title: 'Whoops!',
                 description:
                   'An error occured while playing the song',
@@ -117,6 +126,7 @@ class PlayCommand extends Command {
           return message.guild.me.voice.channel.leave();
         });
     }
+
     const unescapeHTML = str =>
       str.replace(
         /&amp;|&lt;|&gt;|&#39;|&quot;/g,
@@ -128,7 +138,8 @@ class PlayCommand extends Command {
             '&#39;': "'",
             '&quot;': '"',
           }[tag] || tag),
-      );
+    );
+
     function constructSongObj(video, voiceChannel, _message) {
       let duration = formatDuration(video.duration);
       if (duration == '00:00') duration = 'Live Stream';
@@ -136,50 +147,47 @@ class PlayCommand extends Command {
         url: `https://www.youtube.com/watch?v=${video.raw.id}`,
         title: video.title,
         rawDuration: video.duration,
+        channelName: video.channel.title,
         duration,
         thumbnail: video.thumbnails.high.url,
         requester: _message.author.tag,
         voiceChannel,
       };
     }
+    
     function checkTerm(term) {
-      if (
-        term.match(
-          /^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/,
-        )
-      )
-        return 'playlist';
-
-      if (
-        term.match(
-          /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/,
-        )
-      )
-        return 'video';
-
-      return 'search';
+      const regexes = [/^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/,/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/, /-l /, /./];
+      const types = ['playlist', 'video', 'luckysearch', 'search']
+      for (let i = 0;;i++) {
+        if (regexes[i].test(term)) {
+          return types[i];
+          break;
+        }
+      }
     }
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
-      return createEmbed(message, {
-        color: 'errorRed',
+      createEmbed(message, {
+        color: 'eRed',
         title: 'Whoops!',
         description:
           "You aren't in a voice channel! Join one and try again",
         authorBool: true,
         send: 'channel',
-      });
+      })
+      return;
     }
     let vidToGet;
     let playlistTitle;
+    const termType = checkTerm(args.searchTerm);
 
-    if (checkTerm(args.searchTerm) === 'playlist') {
+    if (termType === 'playlist') {
       const playlist = await youtube
         .getPlaylist(args.searchTerm)
         .catch(function() {
           return createEmbed(message, {
-            color: 'errorRed',
+            color: 'eRed',
             title: 'Whoops!',
             description: 'The playlist cannot be found!',
             authorBool: true,
@@ -189,7 +197,7 @@ class PlayCommand extends Command {
       playlistTitle = playlist.title;
       vidToGet = await playlist.getVideos().catch(function() {
         return createEmbed(message, {
-          color: 'errorRed',
+          color: 'eRed',
           title: 'Whoops!',
           description:
             'An error occurred while getting one of the videos',
@@ -197,17 +205,42 @@ class PlayCommand extends Command {
           send: 'channel',
         });
       });
-    } else if (checkTerm(args.searchTerm) === 'video') {
+    } else if (termType === 'video') {
       const query = args.searchTerm
         .replace(/(>|<)/gi, '')
         .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
       vidToGet = query[2].split(/[^0-9a-z_\-]/i)[0];
-    } else if (checkTerm(args.searchTerm) === 'search') {
+    } else if (termType === 'luckysearch') {
+      const videos = await youtube
+        .searchVideos(args.searchTerm.replace('-l ', ''), 1)
+        .catch(function() {
+          return createEmbed(message, {
+            color: 'eRed',
+            title: 'Whoops!',
+            description:
+              'There was an error while searching for a video!',
+            authorBool: true,
+            send: 'channel',
+          });
+        });
+
+      if (videos.length < 1) {
+        return createEmbed(message, {
+          color: 'eRed',
+          title: 'Whoops!',
+          description: 'No videos were found while searching',
+          authorBool: true,
+          send: 'channel',
+        });
+      }
+
+      vidToGet = videos[0].id;
+    } else if (termType === 'search') {
       const videos = await youtube
         .searchVideos(args.searchTerm, 5)
         .catch(function() {
           return createEmbed(message, {
-            color: 'errorRed',
+            color: 'eRed',
             title: 'Whoops!',
             description:
               'There was an error while searching for a video!',
@@ -218,7 +251,7 @@ class PlayCommand extends Command {
 
       if (videos.length < 5) {
         return createEmbed(message, {
-          color: 'errorRed',
+          color: 'eRed',
           title: 'Whoops!',
           description: 'No videos were found while searching',
           authorBool: true,
@@ -234,7 +267,7 @@ class PlayCommand extends Command {
       }
 
       const songEmbed = await createEmbed(message, {
-        color: 'defaultBlue',
+        color: 'dBlue',
         title: 'Music selection',
         description:
           'Pick a song from below using the reactions below',
@@ -243,9 +276,8 @@ class PlayCommand extends Command {
         send: 'channel',
       });
 
-      const emojiSet = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'];
-      for (let emoji of emojiSet) {
-        await songEmbed.react(emoji);
+      for (let emoji of ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑']) {
+        songEmbed.react(emoji);
       }
       let awaitReaction;
 
@@ -264,7 +296,7 @@ class PlayCommand extends Command {
       } catch (e) {
         await songEmbed.delete();
         return createEmbed(message, {
-          color: 'errorRed',
+          color: 'eRed',
           title: 'Whoops!',
           description: 'Please try again',
           authorBool: true,
@@ -274,20 +306,18 @@ class PlayCommand extends Command {
 
       await songEmbed.delete();
       if (awaitReaction === '🛑') return;
-      const videoIndex = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(
-        awaitReaction,
-      );
-      vidToGet = videos[videoIndex].id;
+
+      vidToGet = videos[['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(awaitReaction,)].id;
     }
 
-    if (checkTerm(args.searchTerm) !== 'playlist') {
+    if (termType !== 'playlist') {
       let video;
       try {
         video = await youtube.getVideoByID(vidToGet);
       } catch (error) {
         console.error(error);
         return createEmbed(message, {
-          color: 'errorRed',
+          color: 'eRed',
           title: 'Whoops!',
           description: 'An error occured while getting the video ID',
           authorBool: true,
@@ -300,7 +330,7 @@ class PlayCommand extends Command {
         (video.duration.hours >= 1 && video.duration.minutes > 6)
       ) {
         return createEmbed(message, {
-          color: 'errorRed',
+          color: 'eRed',
           title: 'Whoops!',
           description: "I don't support videos longer than 1 hour!",
           authorBool: true,
@@ -315,12 +345,16 @@ class PlayCommand extends Command {
         playSong(message);
       } else if (message.guild.musicData.isPlaying) {
         return createEmbed(message, {
-          color: 'defaultBlue',
+          color: 'fGreen',
           title: 'New song added to queue',
           fields: [
             {
               name: 'Title',
               value: songObj.title,
+            },
+            {
+              name: 'Channel',
+              value: songObj.channelName,
             },
             {
               name: 'Length',
@@ -353,7 +387,7 @@ class PlayCommand extends Command {
       } else if (message.guild.musicData.isPlaying) {
         {
           return createEmbed(message, {
-            color: 'defaultBlue',
+            color: 'dBlue',
             title: 'New playlist added to queue',
             fields: [
               {

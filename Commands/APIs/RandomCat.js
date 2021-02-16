@@ -16,7 +16,7 @@ class CatCommand extends Command {
       .then((resp) => resp.file)
       .catch((err) => console.log(err));
     createEmbed(message, {
-      color: 'defaultBlue',
+      color: 'dBlue',
       title: 'A random cat to cheer you up!',
       image: cat,
       footer: 'This command uses https://awl.random.cat/meow',

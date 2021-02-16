@@ -17,9 +17,9 @@ class RemoveCommand extends Command {
         start: (message) =>
           createEmbed(message, {
             title: 'Remove track',
-            color: 'defaultBlue',
+            color: 'qYellow',
             description:
-              'Enter the number of the song you want to remove\nTo see the queue, do `y+queue` or `y+queue --advanced`',
+              'Enter the number of the song you want to remove\nTo see the queue, do `y+queue`',
             authorBool: true,
           }),
       },
@@ -32,7 +32,7 @@ class RemoveCommand extends Command {
     const songBeingRemoved =
       message.guild.musicData.queue[args.songNumber - 1];
     createEmbed(message, {
-      color: 'errorRed',
+      color: 'eRed',
       title: 'Removed song:',
       fields: [
         {

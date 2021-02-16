@@ -12,7 +12,7 @@ module.exports = [
         ]
   }, 
   {
-    type: 'Listening',
+    type: 'LISTENING',
     list: [
         'music',
         ]

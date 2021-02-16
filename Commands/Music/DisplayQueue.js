@@ -12,7 +12,7 @@ class QueueCommand extends Command {
   async exec(message) {
     if (message.guild.musicData.queue.length === 0)
       return createEmbed(message, {
-        color: 'errorRed',
+        color: 'eRed',
         title: 'Whoops!',
         description: 'There are no songs in the queue!',
         authorBool: true,
@@ -23,7 +23,7 @@ class QueueCommand extends Command {
     message.guild.musicData.queue.forEach((obj) => {
       fieldArray.push({
         name: `${fieldArray.length + 1}. ${obj.title}`,
-        value: `Requested by: ${obj.requester}\nLength: ${obj.duration}`,
+        value: `Channel: ${obj.channelName}\nLength: ${obj.duration}\nRequested by: ${obj.requester}`,
       });
     });
     let sections = Math.ceil(fieldArray.length / 25);
@@ -33,7 +33,7 @@ class QueueCommand extends Command {
     }
     for (let _fieldArray of fieldArrayArray) {
       createEmbed(message, {
-        color: 'defaultBlue',
+        color: 'dBlue',
         title: 'Queue',
         fields: _fieldArray,
         authorBool: true,

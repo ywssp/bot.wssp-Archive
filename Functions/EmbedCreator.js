@@ -3,13 +3,16 @@ const Discord = require('discord.js');
 module.exports = async function embedCreator(message, embedObject) {
   //inititalize the embed
   const colorPresets = {
-    errorRed: '#F44336',
-    defaultBlue: '#1565C0',
-    finishGreen: '#7CB342',
+    //eRed: Errors, dBlue: Default, fGreen: Finished commands, qYellow: Queries
+    'eRed': 'F44336',
+    'dBlue': '2196F3',
+    'fGreen': '4CAF50',
+    'qYellow': 'FFEB3B'
   };
   const createdEmbed = new Discord.MessageEmbed().setColor(
-    embedObject.color || colorPresets[embedObject.color]
+    colorPresets[embedObject.color]?colorPresets[embedObject.color]:embedObject.color
   );
+
   //check if the author field should be filled
   if (embedObject.authorBool) {
     createdEmbed.setAuthor(

@@ -4,7 +4,7 @@ const musicCheck = require('../../Functions/MusicCheck.js');
 class LeaveCommand extends Command {
   constructor() {
     super('leave', {
-      aliases: ['leave'],
+      aliases: ['leave', 'disconnect', 'dc'],
       category: 'Music',
     });
   }

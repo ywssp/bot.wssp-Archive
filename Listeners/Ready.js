@@ -27,8 +27,9 @@ class ReadyListener extends Listener {
         Math.floor(
         Math.random() * pickedActivityType.list.length,
       )];
+      console.log(pickedActivityType.type, pickedActivity)
       this.client.user.setActivity(pickedActivity, {
-          type: pickedActivityType,
+          type: pickedActivityType.type,
         });
     }, 600000);
   }

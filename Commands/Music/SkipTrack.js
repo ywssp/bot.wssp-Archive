@@ -4,7 +4,7 @@ const musicCheck = require('../../Functions/MusicCheck.js');
 class SkipCommand extends Command {
   constructor() {
     super('skip', {
-      aliases: ['skip'],
+      aliases: ['skip', 'stop'],
       category: 'Music',
     });
   }
