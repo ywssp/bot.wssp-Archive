@@ -6,7 +6,7 @@ class CatCommand extends Command {
   constructor() {
     super('cat', {
       aliases: ['cat'],
-      category: 'Entertainment',
+      category: 'APIs',
     });
   }
 

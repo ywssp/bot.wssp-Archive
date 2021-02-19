@@ -26,37 +26,36 @@ class RemoveCommand extends Command {
     };
     return { songNumber };
   }
-  async exec(message, args) {
+  exec(message, args) {
     if (musicCheck('boolean', message, true, args.songNumber))
       return musicCheck('embed', message, true, args.songNumber);
-    const songBeingRemoved =
-      message.guild.musicData.queue[args.songNumber - 1];
-    createEmbed(message, {
+    const removedSong = message.guild.musicData.queue[args.songNumber - 1];
+    message.guild.musicData.queue.splice(args.songNumber - 1, 1);
+    return createEmbed(message, {
       color: 'eRed',
       title: 'Removed song:',
       fields: [
         {
           name: 'Title',
-          value: songBeingRemoved.title,
+          value: removedSong.title,
         },
         {
           name: 'Length',
-          value: songBeingRemoved.duration,
+          value: removedSong.duration,
         },
         {
           name: 'URL',
-          value: songBeingRemoved.url,
+          value: removedSong.url,
         },
         {
           name: 'Requester',
-          value: songBeingRemoved.requester,
+          value: removedSong.requester,
         },
       ],
-      thumbnail: songBeingRemoved.thumbnail,
+      thumbnail: removedSong.thumbnail,
       authorBool: true,
       send: 'channel',
     });
-    message.guild.musicData.queue.splice(args.songNumber - 1, 1);
   }
 }
 

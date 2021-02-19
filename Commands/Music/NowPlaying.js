@@ -1,5 +1,6 @@
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
+const musicCheck = require('../../Functions/MusicCheck.js');
 const visualiseDuration = require('../../Functions/GenerateDurationVisualisation');
 
 class NowPlayingCommand extends Command {
@@ -11,51 +12,41 @@ class NowPlayingCommand extends Command {
   }
 
   async exec(message) {
-    if (
-      !message.guild.musicData.isPlaying &&
-      !message.guild.musicData.nowPlaying
-    ) {
-      return createEmbed(message, {
-        color: 'eRed',
-        title: 'Whoops!',
-        description: 'There is no song playing!',
-        authorBool: true,
-        send: 'channel',
-      });
-    }
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
 
-    const video = message.guild.musicData.nowPlaying;
-    let description;
-    if (video.duration == 'Live Stream') {
-      description = 'Live Stream';
+    const playing = message.guild.musicData.nowPlaying;
+    let duration;
+    if (playing.duration === '🔴 Live Stream') {
+      duration = '🔴 Live Stream';
     } else {
-      description = visualiseDuration(message, video);
+      duration = visualiseDuration(message, playing);
     }
 
-    createEmbed(message, {
+    return createEmbed(message, {
       color: 'defaultBlue',
       title: 'Now Playing',
-      thumbnail: video.thumbnail,
+      thumbnail: playing.thumbnail,
       fields: [
         {
           name: 'Title',
-          value: video.title,
+          value: playing.title,
         },
         {
           name: 'Channel',
-          value: video.channelName,
+          value: playing.channelName,
         },
         {
           name: 'Length',
-          value: description,
+          value: duration,
         },
         {
           name: 'URL',
-          value: video.url,
+          value: playing.url,
         },
         {
           name: 'Requester',
-          value: video.requester,
+          value: playing.requester,
         },
       ],
       authorBool: true,

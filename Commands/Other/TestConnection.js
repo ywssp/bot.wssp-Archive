@@ -4,7 +4,7 @@ const createEmbed = require('../../Functions/EmbedCreator.js');
 class TestCommand extends Command {
   constructor() {
     super('test', {
-      aliases: ['test','ping', 'pong', 'foo'],
+      aliases: ['test', 'ping', 'pong', 'foo'],
       category: 'Testing',
     });
   }
@@ -25,7 +25,7 @@ class TestCommand extends Command {
     return createEmbed(message, {
       color: 'dBlue',
       authorBool: true,
-      description: phrases[num] + `\n\n\n🔂RTT: ${timeDiff} ms`,
+      description: phrases[num] + `\n\n\n🔂 Round-trip time: ${timeDiff} ms\n💓 Heartbeat: ${this.client.ws.ping} ms`,
       send: 'channel',
     });
   }

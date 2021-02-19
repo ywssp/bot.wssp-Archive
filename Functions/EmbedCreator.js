@@ -4,13 +4,13 @@ module.exports = async function embedCreator(message, embedObject) {
   //inititalize the embed
   const colorPresets = {
     //eRed: Errors, dBlue: Default, fGreen: Finished commands, qYellow: Queries
-    'eRed': 'F44336',
-    'dBlue': '2196F3',
-    'fGreen': '4CAF50',
-    'qYellow': 'FFEB3B'
+    'eRed': '#FF7043',
+    'dBlue': '#03A9F4',
+    'fGreen': '#8BC34A',
+    'qYellow': '#FFEE58'
   };
   const createdEmbed = new Discord.MessageEmbed().setColor(
-    colorPresets[embedObject.color]?colorPresets[embedObject.color]:embedObject.color
+    colorPresets[embedObject.color] ? colorPresets[embedObject.color] : embedObject.color
   );
 
   //check if the author field should be filled

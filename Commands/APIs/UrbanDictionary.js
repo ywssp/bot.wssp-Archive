@@ -7,20 +7,20 @@ class UrbanCommand extends Command {
   constructor() {
     super('urban', {
       aliases: ['urban', 'urbandictionary', 'ud'],
-      category: 'Entertainment',
+      category: 'APIs',
       args: [
         {
           id: 'query',
           match: 'content',
           prompt: {
-        start: message =>
-          createEmbed(message, {
-            title: 'Search',
-            color: 'qYellow', 
-            description: 'Enter a search term',
-            authorBool: true,
-          }),
-      },
+            start: message =>
+              createEmbed(message, {
+                title: 'Search',
+                color: 'qYellow',
+                description: 'Enter a search term',
+                authorBool: true,
+              }),
+          },
         },
       ],
     });

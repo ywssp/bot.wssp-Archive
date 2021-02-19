@@ -10,11 +10,11 @@ class LeaveCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck('boolean', message, true))
-      return musicCheck('embed', message, true);
-    message.react('🛑');
+    if (musicCheck('boolean', message))
+      return musicCheck('embed', message);
     message.guild.musicData.queue = [];
     message.guild.musicData.songDispatcher.end();
+    return message.react('🛑');
   }
 }
 

@@ -1,9 +1,9 @@
 const { Command } = require('discord-akairo');
 const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
-const youtube = new Youtube(process.env.YOUTUBE);
-const formatDuration = require('../../Functions/FormatDuration.js');
 const createEmbed = require('../../Functions/EmbedCreator.js');
+const formatDuration = require('../../Functions/FormatDuration.js');
+const youtube = new Youtube(process.env.YOUTUBE);
 
 class PlayCommand extends Command {
   constructor() {
@@ -12,6 +12,7 @@ class PlayCommand extends Command {
       category: 'Music',
     });
   }
+
   *args() {
     const searchTerm = yield {
       type: 'string',
@@ -21,18 +22,7 @@ class PlayCommand extends Command {
           createEmbed(message, {
             title: 'Search',
             color: 'qYellow', 
-            description: 'Enter a search term or a youtube link',
-            fields: [
-              {
-                name: 'Example',
-                value:
-                  `\`\`\`https://youtu.be/bbJkJ8T6ZBQ | Plays the linked video
-Search Term | Lists 5 videos from the query to choose from
--l 'search term' | Plays the first video from the query
-https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos inside the playlist on the queue\`\`\``,
-              },
-            ],
-            authorBool: true,
+            description: 'Enter a search term or a youtube link. Add `-l` before your search term to automatically play the first song',
           }),
       },
     };
@@ -44,12 +34,12 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
       const song = message.guild.musicData.queue[0];
       song.voiceChannel
         .join()
-        .then(function(connection) {
+        .then(connection => {
           const dispatcher = connection
-            .play(
+            .play( 
               ytdl(song.url, {
                 quality: 'highestaudio',
-                highWaterMark: 1024 * 1024 * 10,
+                highWaterMark: 1024 * 1024 * 10
               }),
             )
             .on('start', async function() {
@@ -81,7 +71,6 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
                   },
                 ],
                 thumbnail: song.thumbnail,
-                authorBool: true,
               });
               if (message.guild.musicData.queue[1]) {
                 videoEmbed.addField('\u200B', '\u200B');
@@ -110,7 +99,6 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
                 title: 'Whoops!',
                 description:
                   'An error occured while playing the song',
-                authorBool: true,
                 send: 'channel',
               });
               console.error(e);
@@ -142,7 +130,7 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
 
     function constructSongObj(video, voiceChannel, _message) {
       let duration = formatDuration(video.duration);
-      if (duration == '00:00') duration = 'Live Stream';
+      if (duration == '00:00') duration = '🔴 Live Stream';
       return {
         url: `https://www.youtube.com/watch?v=${video.raw.id}`,
         title: video.title,
@@ -178,9 +166,7 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
       })
       return;
     }
-    let vidToGet;
-    let playlistTitle;
-    const termType = checkTerm(args.searchTerm);
+    let vidToGet, playlistTitle, termType = checkTerm(args.searchTerm);
 
     if (termType === 'playlist') {
       const playlist = await youtube
@@ -195,21 +181,17 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
           });
         });
       playlistTitle = playlist.title;
-      vidToGet = await playlist.getVideos().catch(function() {
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
-          description:
-            'An error occurred while getting one of the videos',
-          authorBool: true,
-          send: 'channel',
-        });
-      });
+      vidToGet = await playlist.getVideos()
+        .catch(() => createEmbed(message, {
+            color: 'eRed',
+            title: 'Whoops!',
+            description: 'An error occurred while getting one of the videos',
+            authorBool: true,
+            send: 'channel',
+          })
+        );
     } else if (termType === 'video') {
-      const query = args.searchTerm
-        .replace(/(>|<)/gi, '')
-        .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-      vidToGet = query[2].split(/[^0-9a-z_\-]/i)[0];
+      vidToGet = args.searchTerm.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2].split(/[^0-9a-z_\-]/i)[0];
     } else if (termType === 'luckysearch') {
       const videos = await youtube
         .searchVideos(args.searchTerm.replace('-l ', ''), 1)
@@ -219,7 +201,6 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
             title: 'Whoops!',
             description:
               'There was an error while searching for a video!',
-            authorBool: true,
             send: 'channel',
           });
         });
@@ -229,7 +210,6 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
           color: 'eRed',
           title: 'Whoops!',
           description: 'No videos were found while searching',
-          authorBool: true,
           send: 'channel',
         });
       }
@@ -270,31 +250,21 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
         color: 'dBlue',
         title: 'Music selection',
         description:
-          'Pick a song from below using the reactions below',
+          'Pick a song by typing a number, or type `stop`',
         fields: fieldArr,
         authorBool: true,
         send: 'channel',
       });
 
-      for (let emoji of ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑']) {
-        songEmbed.react(emoji);
-      }
-      let awaitReaction;
-
+      let songIndex;
       try {
-        awaitReaction = await songEmbed.awaitReactions(
-          (reaction, user) => {
-            return (
-              ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '🛑'].some(
-                emoji => reaction.emoji.name === emoji,
-              ) && user.id === message.author.id
-            );
-          },
-          { max: 1, time: 60000, errors: ['time'] },
-        );
-        awaitReaction = awaitReaction.first().emoji.name;
+        const grabbedMessage = await songEmbed.channel.awaitMessages((collected, user) => {
+          return /[1-5]|(stop)/i.exec(collected.content) !== 'null'
+          }, { max: 1, time: 30000, errors: ['time'] });
+        songIndex = /[1-5]|(stop)/i.exec(grabbedMessage.first().content)[0];
       } catch (e) {
         await songEmbed.delete();
+        console.log(e)
         return createEmbed(message, {
           color: 'eRed',
           title: 'Whoops!',
@@ -305,17 +275,16 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
       }
 
       await songEmbed.delete();
-      if (awaitReaction === '🛑') return;
-
-      vidToGet = videos[['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'].indexOf(awaitReaction,)].id;
+      if (songIndex === 'stop') return;
+      vidToGet = videos[songIndex-1].id;
     }
 
     if (termType !== 'playlist') {
       let video;
       try {
         video = await youtube.getVideoByID(vidToGet);
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
         return createEmbed(message, {
           color: 'eRed',
           title: 'Whoops!',
@@ -327,7 +296,7 @@ https://www.youtube.com/playlist?list=PL3817D41C7D841E23 | Adds the videos insid
 
       if (
         video.duration.hours !== 0 ||
-        (video.duration.hours >= 1 && video.duration.minutes > 6)
+        (video.duration.hours >= 1 && video.duration.minutes > 20)
       ) {
         return createEmbed(message, {
           color: 'eRed',

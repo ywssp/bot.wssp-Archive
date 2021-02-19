@@ -1,20 +1,20 @@
 //Rename this to 'Activities.js'
 module.exports = [
   {
-  type: 'WATCHING',
-  list: ['you',
-        ]
+    type: 'WATCHING',
+    list: ['you',
+    ]
   },
   {
     type: 'PLAYING',
     list: [
-        'Minecraft',
-        ]
-  }, 
+      'Minecraft',
+    ]
+  },
   {
     type: 'LISTENING',
     list: [
-        'music',
-        ]
-}
+      'music',
+    ]
+  }
 ]

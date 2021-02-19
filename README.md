@@ -21,12 +21,28 @@ Used in [start.js](start.js).
 The api key of the bot
 Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js).
 
+### process.env.PREFIX
+
+The perfix that the bot uses. Multiple prefixes are seperated using `|`
+Used in [start.js](start.js).
+
+your `.env` file should look like this:
+```
+TOKEN=NzIwNjA1ODE4MzgyMzE5Njk4.XuIadw.kjtUXvBOzzTxepM_R3y5eW7mBnc
+YOUTUBE=AIzaSyDfNuFz4A8O7oliOGqVdtrJCsjFbYpBqCU
+OWNER=689607114011705439
+PREFIX='+|!|/'
+```
 ## NPM Packages and services used
 
 ### Discord
 
 - [Discord.js](https://discord.js.org/#/)
 - [discord-akairo](https://discord-akairo.github.io/#/)
+
+### Music Commands
+- [simple-youtube-api](https://www.npmjs.com/package/simple-youtube-api)
+- [ytd-core](https://www.npmjs.com/package/ytdl-core)
 
 ### Services
 
