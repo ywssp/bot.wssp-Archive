@@ -1,6 +1,6 @@
 const { Command } = require('discord-akairo');
-const musicCheck = require('../../Functions/MusicCheck.js');
 const createEmbed = require('../../Functions/EmbedCreator.js');
+const musicCheck = require('../../Functions/MusicCheck.js');
 
 class SkipToCommand extends Command {
   constructor() {
@@ -27,12 +27,12 @@ class SkipToCommand extends Command {
     return { songNumber };
   }
 
-  async exec(message, args) {
+  exec(message, args) {
     if (musicCheck('boolean', message, true, args.songNumber))
       return musicCheck('embed', message, true, args.songNumber);
     message.guild.musicData.queue.splice(0, args.songNumber - 1);
     message.guild.musicData.songDispatcher.end();
-    message.react('⏭');
+    return message.react('⏭');
   }
 }
 

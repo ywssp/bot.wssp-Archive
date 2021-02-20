@@ -6,7 +6,7 @@ class DogCommand extends Command {
   constructor() {
     super('dog', {
       aliases: ['dog'],
-      category: 'Entertainment',
+      category: 'APIs',
     });
   }
 

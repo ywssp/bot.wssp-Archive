@@ -17,21 +17,34 @@ class ReadyListener extends Listener {
       this.client.user.setActivity('you', {
         type: 'WATCHING',
       });
-    }, 60000);
+    }, 30000);
+
+    const genShuffledActs = (actObj) => {
+      let activityArray = [];
+      for (let actType of actObj) {
+        for (let act of actType.list) {
+          activityArray.push([actType.type, act])
+        }
+      };
+      let m = activityArray.length;
+      while (m) {
+        const i = Math.floor(Math.random() * m--);
+        [activityArray[m], activityArray[i]] = [activityArray[i], activityArray[m]];
+      };
+
+      return activityArray;
+    };
+
+    let shuffledActs = [];
     this.client.setInterval(() => {
-      const pickedActivityType = activities[
-        Math.floor(
-        Math.random() * activities.length,
-      )];
-      const pickedActivity = pickedActivityType.list[
-        Math.floor(
-        Math.random() * pickedActivityType.list.length,
-      )];
-      console.log(pickedActivityType.type, pickedActivity)
-      this.client.user.setActivity(pickedActivity, {
-          type: pickedActivityType.type,
-        });
-    }, 600000);
+      if (shuffledActs.length === 0) {
+        shuffledActs = genShuffledActs(activities);
+      }
+      let activity = shuffledActs.pop();
+      this.client.user.setActivity(activity[1], {
+        type: activity[0],
+      });
+    }, 60000);
   }
 }
 

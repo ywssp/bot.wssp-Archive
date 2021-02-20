@@ -9,11 +9,11 @@ class SkipCommand extends Command {
     });
   }
 
-  async exec(message) {
+  exec(message) {
     if (musicCheck('boolean', message))
       return musicCheck('embed', message);
     message.guild.musicData.songDispatcher.end();
-    message.react('⏭');
+    return message.react('⏭');
   }
 }
 
