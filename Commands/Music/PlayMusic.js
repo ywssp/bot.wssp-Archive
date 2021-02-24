@@ -21,7 +21,7 @@ class PlayCommand extends Command {
         start: message =>
           createEmbed(message, {
             title: 'Search',
-            color: 'qYellow', 
+            color: 'qYellow',
             description: 'Enter a search term or a youtube link. Add `-l` before your search term to automatically play the first song',
           }),
       },
@@ -36,10 +36,10 @@ class PlayCommand extends Command {
         .join()
         .then(connection => {
           const dispatcher = connection
-            .play( 
+            .play(
               ytdl(song.url, {
                 quality: 'highestaudio',
-                highWaterMark: 1024 * 1024 * 10
+                highWaterMark: 1024 * 1024 * 10,
               }),
             )
             .on('start', async function() {
@@ -126,7 +126,7 @@ class PlayCommand extends Command {
             '&#39;': "'",
             '&quot;': '"',
           }[tag] || tag),
-    );
+      );
 
     function constructSongObj(video, voiceChannel, _message) {
       let duration = formatDuration(video.duration);
@@ -142,11 +142,11 @@ class PlayCommand extends Command {
         voiceChannel,
       };
     }
-    
+
     function checkTerm(term) {
-      const regexes = [/^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/,/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/, /-l /, /./];
+      const regexes = [/^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/, /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/, /-l /, /./];
       const types = ['playlist', 'video', 'luckysearch', 'search']
-      for (let i = 0;;i++) {
+      for (let i = 0; ; i++) {
         if (regexes[i].test(term)) {
           return types[i];
           break;
@@ -183,12 +183,12 @@ class PlayCommand extends Command {
       playlistTitle = playlist.title;
       vidToGet = await playlist.getVideos()
         .catch(() => createEmbed(message, {
-            color: 'eRed',
-            title: 'Whoops!',
-            description: 'An error occurred while getting one of the videos',
-            authorBool: true,
-            send: 'channel',
-          })
+          color: 'eRed',
+          title: 'Whoops!',
+          description: 'An error occurred while getting one of the videos',
+          authorBool: true,
+          send: 'channel',
+        })
         );
     } else if (termType === 'video') {
       vidToGet = args.searchTerm.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2].split(/[^0-9a-z_\-]/i)[0];
@@ -260,7 +260,7 @@ class PlayCommand extends Command {
       try {
         const grabbedMessage = await songEmbed.channel.awaitMessages((collected, user) => {
           return /[1-5]|(stop)/i.exec(collected.content) !== 'null'
-          }, { max: 1, time: 30000, errors: ['time'] });
+        }, { max: 1, time: 30000, errors: ['time'] });
         songIndex = /[1-5]|(stop)/i.exec(grabbedMessage.first().content)[0];
       } catch (e) {
         await songEmbed.delete();
@@ -276,7 +276,7 @@ class PlayCommand extends Command {
 
       await songEmbed.delete();
       if (songIndex === 'stop') return;
-      vidToGet = videos[songIndex-1].id;
+      vidToGet = videos[songIndex - 1].id;
     }
 
     if (termType !== 'playlist') {
@@ -344,12 +344,16 @@ class PlayCommand extends Command {
         });
       }
     } else {
+      const processingStatus = await message.channel.send('Processing playlist...')
       for (let _video of vidToGet) {
-        const video = await _video.fetch();
-        message.guild.musicData.queue.push(
-          constructSongObj(video, voiceChannel, message),
-        );
+        if (_video.raw.status.privacyStatus !== 'private') {
+          const video = await _video.fetch();
+          message.guild.musicData.queue.push(
+            constructSongObj(video, voiceChannel, message),
+          );
+        }
       }
+      await processingStatus.delete()
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);

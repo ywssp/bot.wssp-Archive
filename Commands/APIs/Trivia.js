@@ -74,6 +74,7 @@ class TriviaCommand extends Command {
       description: 'An error occurred while fetching the trivia questions',
       send: 'command'
     })
+    console.log(questionSet);
 
     let scores = {};
 
