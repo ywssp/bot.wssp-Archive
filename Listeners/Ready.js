@@ -1,3 +1,4 @@
+'use strict';
 const { Listener } = require('discord-akairo');
 const activities = require('../Others/Activities.js')
 
@@ -12,12 +13,6 @@ class ReadyListener extends Listener {
   exec() {
     const now = new Date;
     console.log(this.client.user.tag, 'started in', now.toUTCString());
-    this.client.user.setActivity('Starting up...');
-    this.client.setTimeout(() => {
-      this.client.user.setActivity('you', {
-        type: 'WATCHING',
-      });
-    }, 30000);
 
     const genShuffledActs = (actObj) => {
       let activityArray = [];
@@ -35,7 +30,14 @@ class ReadyListener extends Listener {
       return activityArray;
     };
 
-    let shuffledActs = [];
+    let shuffledActs = genShuffledActs(activities);
+    const firstAct = shuffledActs.pop()
+    this.client.setTimeout(() => {
+      this.client.user.setActivity(firstAct[1], {
+        type: firstAct[0],
+      });
+    }, 15000);
+
     this.client.setInterval(() => {
       if (shuffledActs.length === 0) {
         shuffledActs = genShuffledActs(activities);

@@ -1,8 +1,14 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
 const createEmbed = require('../../Functions/EmbedCreator.js');
-const formatDuration = require('../../Functions/FormatDuration.js');
+const musicCheck = require('../../Functions/MusicCheck.js');
+const {
+  createSongObj,
+  unescapeHTML,
+  formatDuration
+} = require('../../Functions/MusicFunctions.js');
 const youtube = new Youtube(process.env.YOUTUBE);
 
 class PlayCommand extends Command {
@@ -10,43 +16,88 @@ class PlayCommand extends Command {
     super('play', {
       aliases: ['play', 'add'],
       category: 'Music',
+      channel: 'guild'
     });
   }
 
-  *args() {
+  async *args(message) {
     const searchTerm = yield {
-      type: 'string',
       match: 'content',
       prompt: {
         start: message =>
-          createEmbed(message, {
+          createEmbed(message, 'query', {
             title: 'Search',
-            color: 'qYellow', 
-            description: 'Enter a search term or a youtube link. Add `-l` before your search term to automatically play the first song',
+            description: 'Enter a search term or a YouTube link. Use the `--current` or `-c` flag to add the current song',
           }),
       },
     };
-    return { searchTerm };
+
+    let video;
+
+    // If the '--current' flag is present, get the video id of the song currently playing
+	  if (/^(-c)|(--current)$/.test(searchTerm)) {
+		  video = message.guild.musicData.nowPlaying.id;
+      // If the term is a playlist link, get all video ids of the playlist
+	  } else if (/^.*(youtu.be\/|list=)([^#\&\?]*).*/.test(searchTerm)) {
+      const playlist = await youtube
+        .getPlaylist(searchTerm)
+        .catch(() => {
+          return createEmbed(message, 'error', {
+            description: 'The playlist cannot be found!',
+            send: 'channel',
+          });
+        });
+
+      video = await playlist.getVideos()
+        .catch(() => {
+          createEmbed(message, 'error', {
+            descShort: 'getting one of the videos',
+            send: 'channel',
+          });
+          return { error: true };
+        });
+
+      video.push(playlist);
+      // If the term is a video link, get the video id
+      } else if (/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/.test(searchTerm)) {
+        video = searchTerm.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2].split(/[^0-9a-z_\-]/i)[0];
+      } else {
+        const videoFetched = await youtube
+          .searchVideos(searchTerm, 1)
+          .catch(() => {
+            createEmbed(message, 'error', {
+              descShort: 'searching for a video',
+              send: 'channel',
+            });
+            return { error: true };
+          });
+
+        // If there are not enough videos found while searching
+        if (videoFetched.length < 1) {
+          createEmbed(message, 'error', {
+            description: 'No videos were found while searching',
+            send: 'channel',
+          });
+        return { error: true };
+        };
+        video = videoFetched[0].id;
+      };
+
+    return { video };
   }
 
   async exec(message, args) {
     async function playSong(message) {
-      const song = message.guild.musicData.queue[0];
-      song.voiceChannel
-        .join()
+      const song = message.guild.musicData.loop === 'track' ? message.guild.musicData.nowPlaying : message.guild.musicData.queue[0];
+      await song.voiceChannel.join()
         .then(connection => {
-          const dispatcher = connection
-            .play( 
-              ytdl(song.url, {
-                quality: 'highestaudio',
-                highWaterMark: 1024 * 1024 * 10
-              }),
-            )
-            .on('start', async function() {
+          const dispatcher = connection.play(ytdl(song.url, {
+            quality: 'highestaudio'
+          }))
+            .on('start', async () => {
               message.guild.musicData.songDispatcher = dispatcher;
               dispatcher.setVolume(message.guild.musicData.volume);
-              const videoEmbed = await createEmbed(message, {
-                color: 'dBlue',
+              const songEmbed = await createEmbed(message, 'default', {
                 title: 'Now playing:',
                 fields: [
                   {
@@ -71,34 +122,37 @@ class PlayCommand extends Command {
                   },
                 ],
                 thumbnail: song.thumbnail,
+								footer: `Paused: ${message.guild.musicData.songDispatcher.paused?'✅':'❌'} |  Looped: ${message.guild.musicData.loop?message.guild.musicData.loop:'❌'} | Volume: ${message.guild.musicData.volume * 50}`,
               });
-              if (message.guild.musicData.queue[1]) {
-                videoEmbed.addField('\u200B', '\u200B');
-                videoEmbed.addField(
-                  'Next Song',
-                  message.guild.musicData.queue[1].title,
-                );
+              if (message.guild.musicData.loop !== 'track') message.guild.musicData.queue.shift();
+              if (message.guild.musicData.queue[0]) {
+                songEmbed.addFields({ name: '\u200B', value: '\u200B' }, {
+                  name: 'Next Song',
+                  value: message.guild.musicData.queue[0].title,
+                });
               }
-              message.channel.send(videoEmbed);
               message.guild.musicData.nowPlaying = song;
-              return message.guild.musicData.queue.shift();
+              return message.channel.send(songEmbed);
             })
-            .on('finish', function() {
-              if (message.guild.musicData.queue.length >= 1) {
+            .on('finish', () => {
+							if (message.guild.musicData.loop === 'queue') {
+								message.guild.musicData.queue.push(message.guild.musicData.nowPlaying)
+							}
+
+              if (message.guild.musicData.queue.length >= 1 || message.guild.musicData.loop === 'track') {
                 return playSong(message);
               } else {
                 message.guild.musicData.isPlaying = false;
                 message.guild.musicData.nowPlaying = null;
+								message.guild.musicData.loop = false;
                 message.guild.musicData.songDispatcher = null;
                 return message.guild.me.voice.channel.leave();
               }
             })
-            .on('error', function(e) {
-              createEmbed(message, {
-                color: 'eRed',
-                title: 'Whoops!',
-                description:
-                  'An error occured while playing the song',
+            .on('error', (e) => {
+              createEmbed(message, 'error', {
+                descShort:
+                  'playing the song',
                 send: 'channel',
               });
               console.error(e);
@@ -115,180 +169,23 @@ class PlayCommand extends Command {
         });
     }
 
-    const unescapeHTML = str =>
-      str.replace(
-        /&amp;|&lt;|&gt;|&#39;|&quot;/g,
-        tag =>
-          ({
-            '&amp;': '&',
-            '&lt;': '<',
-            '&gt;': '>',
-            '&#39;': "'",
-            '&quot;': '"',
-          }[tag] || tag),
-    );
-
-    function constructSongObj(video, voiceChannel, _message) {
-      let duration = formatDuration(video.duration);
-      if (duration == '00:00') duration = '🔴 Live Stream';
-      return {
-        url: `https://www.youtube.com/watch?v=${video.raw.id}`,
-        title: video.title,
-        rawDuration: video.duration,
-        channelName: video.channel.title,
-        duration,
-        thumbnail: video.thumbnails.high.url,
-        requester: _message.author.tag,
-        voiceChannel,
-      };
-    }
-    
-    function checkTerm(term) {
-      const regexes = [/^(?!.*\?.*\bv=)https:\/\/www\.youtube\.com\/.*\?.*\blist=.*$/,/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/, /-l /, /./];
-      const types = ['playlist', 'video', 'luckysearch', 'search']
-      for (let i = 0;;i++) {
-        if (regexes[i].test(term)) {
-          return types[i];
-          break;
-        }
-      }
-    }
-
     const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel) {
-      createEmbed(message, {
-        color: 'eRed',
-        title: 'Whoops!',
-        description:
-          "You aren't in a voice channel! Join one and try again",
-        authorBool: true,
-        send: 'channel',
-      })
-      return;
-    }
-    let vidToGet, playlistTitle, termType = checkTerm(args.searchTerm);
 
-    if (termType === 'playlist') {
-      const playlist = await youtube
-        .getPlaylist(args.searchTerm)
-        .catch(function() {
-          return createEmbed(message, {
-            color: 'eRed',
-            title: 'Whoops!',
-            description: 'The playlist cannot be found!',
-            authorBool: true,
-            send: 'channel',
-          });
-        });
-      playlistTitle = playlist.title;
-      vidToGet = await playlist.getVideos()
-        .catch(() => createEmbed(message, {
-            color: 'eRed',
-            title: 'Whoops!',
-            description: 'An error occurred while getting one of the videos',
-            authorBool: true,
-            send: 'channel',
-          })
-        );
-    } else if (termType === 'video') {
-      vidToGet = args.searchTerm.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2].split(/[^0-9a-z_\-]/i)[0];
-    } else if (termType === 'luckysearch') {
-      const videos = await youtube
-        .searchVideos(args.searchTerm.replace('-l ', ''), 1)
-        .catch(function() {
-          return createEmbed(message, {
-            color: 'eRed',
-            title: 'Whoops!',
-            description:
-              'There was an error while searching for a video!',
-            send: 'channel',
-          });
-        });
+    if (musicCheck(message, {
+      sameVC: false,
+      playing: false
+    })) return;
 
-      if (videos.length < 1) {
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
-          description: 'No videos were found while searching',
-          send: 'channel',
-        });
-      }
+    if (args.error) return;
 
-      vidToGet = videos[0].id;
-    } else if (termType === 'search') {
-      const videos = await youtube
-        .searchVideos(args.searchTerm, 5)
-        .catch(function() {
-          return createEmbed(message, {
-            color: 'eRed',
-            title: 'Whoops!',
-            description:
-              'There was an error while searching for a video!',
-            authorBool: true,
-            send: 'channel',
-          });
-        });
-
-      if (videos.length < 5) {
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
-          description: 'No videos were found while searching',
-          authorBool: true,
-          send: 'channel',
-        });
-      }
-      const fieldArr = [];
-      for (let i = 0; i < videos.length; i++) {
-        fieldArr.push({
-          name: 'Song ' + (i + 1),
-          value: unescapeHTML(videos[i].title),
-        });
-      }
-
-      const songEmbed = await createEmbed(message, {
-        color: 'dBlue',
-        title: 'Music selection',
-        description:
-          'Pick a song by typing a number, or type `stop`',
-        fields: fieldArr,
-        authorBool: true,
-        send: 'channel',
-      });
-
-      let songIndex;
-      try {
-        const grabbedMessage = await songEmbed.channel.awaitMessages((collected, user) => {
-          return /[1-5]|(stop)/i.exec(collected.content) !== 'null'
-          }, { max: 1, time: 30000, errors: ['time'] });
-        songIndex = /[1-5]|(stop)/i.exec(grabbedMessage.first().content)[0];
-      } catch (e) {
-        await songEmbed.delete();
-        console.log(e)
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
-          description: 'Please try again',
-          authorBool: true,
-          send: 'channel',
-        });
-      }
-
-      await songEmbed.delete();
-      if (songIndex === 'stop') return;
-      vidToGet = videos[songIndex-1].id;
-    }
-
-    if (termType !== 'playlist') {
+    if (typeof args.video === 'string') {
       let video;
       try {
-        video = await youtube.getVideoByID(vidToGet);
+        video = await youtube.getVideoByID(args.video);
       } catch (e) {
         console.error(e);
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
-          description: 'An error occured while getting the video ID',
+        return createEmbed(message, 'error', {
+          descShort: 'getting the video ID',
           authorBool: true,
           send: 'channel',
         });
@@ -298,23 +195,20 @@ class PlayCommand extends Command {
         video.duration.hours !== 0 ||
         (video.duration.hours >= 1 && video.duration.minutes > 20)
       ) {
-        return createEmbed(message, {
-          color: 'eRed',
-          title: 'Whoops!',
+        return createEmbed(message, 'error', {
           description: "I don't support videos longer than 1 hour!",
           authorBool: true,
           send: 'channel',
         });
       }
 
-      const songObj = constructSongObj(video, voiceChannel, message);
+      const songObj = createSongObj(video, voiceChannel, message);
       message.guild.musicData.queue.push(songObj);
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);
       } else if (message.guild.musicData.isPlaying) {
-        return createEmbed(message, {
-          color: 'fGreen',
+        return createEmbed(message, 'success', {
           title: 'New song added to queue',
           fields: [
             {
@@ -344,30 +238,41 @@ class PlayCommand extends Command {
         });
       }
     } else {
-      for (let _video of vidToGet) {
-        const video = await _video.fetch();
+      const playlistData = args.video.pop();
+      for (let vid of args.video) {
+        const video = await vid.fetch();
         message.guild.musicData.queue.push(
-          constructSongObj(video, voiceChannel, message),
+          createSongObj(video, voiceChannel, message),
         );
       }
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);
-      } else if (message.guild.musicData.isPlaying) {
-        {
-          return createEmbed(message, {
-            color: 'dBlue',
+      } else {
+          return createEmbed(message, 'success', {
             title: 'New playlist added to queue',
             fields: [
               {
                 name: 'Title',
-                value: playlistTitle,
+                value: playlistData.title,
+              },
+              {
+                name: 'Channel',
+                value: playlistData.channelName,
+              },
+              {
+                name: 'No. of videos',
+                value: playlistData.length,
+              },
+              {
+                name: 'URL',
+                value: playlistData.url,
               },
             ],
+            thumbnail: playlistData.thumbnail,
             authorBool: true,
             send: 'channel',
           });
-        }
       }
     }
   }

@@ -1,3 +1,4 @@
+'use strict';
 const fetch = require('node-fetch');
 const createEmbed = require('./EmbedCreator.js');
 
@@ -25,9 +26,7 @@ module.exports = {
       }
     };
 
-    const b64toText = str => {
-      Buffer.from(str, 'base64').toString('utf8');
-    };
+    const b64toText = str => Buffer.from(str, 'base64').toString('utf8');
 
     const choices = [
       {
@@ -55,8 +54,7 @@ module.exports = {
       if (choice.content) answerString += `\n${b64toText(choice.id).toUpperCase()}. ${b64toText(choice.content)}`
     }
 
-    const embed = createEmbed(message, {
-      color: 'qYellow',
+    const embed = createEmbed(message, 'query', {
       title: `${b64toText(qObject.category)} | ${b64toText(qObject.difficulty).charAt(0).toUpperCase() + b64toText(qObject.difficulty).slice(1)}`,
       description: `${b64toText(qObject.question)}\n${answerString}`,
       send: 'channel'
@@ -71,15 +69,12 @@ module.exports = {
       type: type,
       prompt: {
         start: message =>
-          createEmbed(message, {
+          createEmbed(message, 'query', {
             title: title,
-            color: 'qYellow',
             description: description,
           }),
         retry: message =>
-          createEmbed(message, {
-            title: 'Whoops!',
-            color: 'eRed',
+          createEmbed(message, 'error', {
             description: 'Your input is invalid!',
           }),
       }

@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -6,13 +7,14 @@ class ClearCommand extends Command {
     super('clear', {
       aliases: ['clear'],
       category: 'Music',
+      channel: 'guild'
     });
   }
 
   exec(message) {
-    if (musicCheck('boolean', message, true))
-      return musicCheck('embed', message, true);
-    message.guild.musicData.queue = [];
+    if (musicCheck(message)) return;
+      
+    message.guild.musicData.queue = 0;
     return message.react('🧹');
   }
 }

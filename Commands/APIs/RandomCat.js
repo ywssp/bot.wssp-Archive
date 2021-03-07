@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const fetch = require('node-fetch');
 const createEmbed = require('../../Functions/EmbedCreator.js');
@@ -15,8 +16,8 @@ class CatCommand extends Command {
       .then((resp) => resp.json())
       .then((resp) => resp.file)
       .catch((err) => console.log(err));
-    createEmbed(message, {
-      color: 'dBlue',
+
+    return createEmbed(message, 'default', {
       title: 'A random cat to cheer you up!',
       image: cat,
       footer: 'This command uses https://awl.random.cat/meow',

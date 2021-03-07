@@ -1,4 +1,5 @@
-const formatDuration = require('./FormatDuration.js');
+'use strict';
+const { formatDuration } = require('./MusicFunctions.js');
 
 module.exports = (message, video) => {
   const passedTimeMS = message.guild.musicData.songDispatcher.streamTime;
@@ -7,20 +8,9 @@ module.exports = (message, video) => {
     minutes: Math.floor((passedTimeMS / 60000) % 60),
     hours: Math.floor((passedTimeMS / 3600000) % 24),
   });
+  const totalTimeMS = video.durationMS;
+  const totalTime = video.duration;
 
-  const totalDurationObj = video.rawDuration;
-  const totalDuration = formatDuration(totalDurationObj);
-
-  let totalTimeMS = 0;
-  Object.keys(totalDurationObj).forEach((key) => {
-    if (key === 'hours') {
-      totalTimeMS += totalDurationObj[key] * 3600000;
-    } else if (key === 'minutes') {
-      totalTimeMS += totalDurationObj[key] * 60000;
-    } else if (key === 'seconds') {
-      totalTimeMS += totalDurationObj[key] * 100;
-    }
-  });
   const playBackBarLocation = Math.round((passedTimeMS / totalTimeMS) * 10);
   let playBack = '';
   for (let i = 0; i <= 20; i++) {
@@ -29,7 +19,7 @@ module.exports = (message, video) => {
     } else {
       playBack += '—';
     }
-  }
-  playBack = `${passedTime} | ${totalDuration}\n${playBack}`;
-  return playBack;
+  };
+
+  return `${passedTime} | ${totalTime}\n${playBack}`;
 };
