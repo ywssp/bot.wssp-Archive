@@ -1,66 +1,72 @@
+'use strict';
 const Discord = require('discord.js');
 
-module.exports = async function embedCreator(message, embedObject) {
-  //inititalize the embed
-  const colorPresets = {
-    //eRed: Errors, dBlue: Default, fGreen: Finished commands, qYellow: Queries
-    'eRed': '#FF7043',
-    'dBlue': '#03A9F4',
-    'fGreen': '#8BC34A',
-    'qYellow': '#FFEE58'
+module.exports = async function embedCreator(
+  message,
+  preset,
+  settings,
+) {
+  const presets = {
+    error: {
+      color: '#FF7043',
+      title: 'Whooops!',
+      description: !settings.descFalse?`An error occured while ${settings.descShort?settings.descShort:'executing the command'}`:'',
+    },
+    default: {color: '#03A9F4'},
+    success: {
+      color: '#8BC34A',
+      title: 'Success!',
+    },
+    query: {color: '#FFEE58'},
   };
-  const createdEmbed = new Discord.MessageEmbed().setColor(
-    colorPresets[embedObject.color] ? colorPresets[embedObject.color] : embedObject.color
+
+  //inititalize the embed
+  const createdEmbed = new Discord.MessageEmbed(
+    presets[preset] ? presets[preset] : null,
   );
 
   //check if the author field should be filled
-  if (embedObject.authorBool) {
-    createdEmbed.setAuthor(
-      message.author.username,
-      message.author.displayAvatarURL()
-    );
-  }
+  if (settings.authorBool) createdEmbed.setAuthor(
+        message.author.username,
+        message.author.displayAvatarURL(),
+      );
+
   //check if a title was given
-  if (embedObject.title) {
-    createdEmbed.setTitle(embedObject.title);
-  }
+  if (settings.title) createdEmbed.setTitle(settings.title);
+
   //check if there was a given url
-  if (embedObject.url) {
-    createdEmbed.setURL(embedObject.url);
-  }
+  if (settings.url) createdEmbed.setURL(settings.url);
+
   //check if a thumbnail url was given
-  if (embedObject.thumbnail) {
-    createdEmbed.setThumbnail(embedObject.thumbnail);
-  }
+  if (settings.thumbnail) createdEmbed.setThumbnail(settings.thumbnail);
+
   //check if a description was given
-  if (embedObject.description) {
-    createdEmbed.setDescription(embedObject.description);
-  }
+  if (settings.description) createdEmbed.setDescription(settings.description);
+
   //check if there are given fields
-  if (embedObject.fields) {
-    createdEmbed.addFields(embedObject.fields);
-  }
+  if (settings.fields) createdEmbed.addFields(settings.fields);
+
   //check if an image url was given
-  if (embedObject.image) {
-    createdEmbed.setImage(embedObject.image);
-  }
+  if (settings.image) createdEmbed.setImage(settings.image);
+
   //check if the footer field should be filled
-  if (embedObject.footer) {
+  if (settings.footer) {
     createdEmbed.setTimestamp();
     createdEmbed.setFooter(
-      embedObject.footer,
-      message.client.user.displayAvatarURL()
+      settings.footer,
+      message.client.user.displayAvatarURL(),
     );
   }
-  if (embedObject.send) {
-    switch (embedObject.send) {
-      case 'author':
-        return await message.author.send(createdEmbed);
-      case 'channel':
-        return await message.channel.send(createdEmbed);
-      default:
-        break;
-    }
+
+  switch (settings.send) {
+    case 'author':
+      return await message.author.send(createdEmbed);
+      break;
+    case 'channel':
+      return await message.channel.send(createdEmbed);
+      break;
+    default:
+      return createdEmbed;
+      break;
   }
-  return createdEmbed;
 };

@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const fetch = require('node-fetch');
 const querystring = require('querystring');
@@ -29,31 +30,23 @@ class UrbanCommand extends Command {
   async exec(message, args) {
     const trim = (str, max) =>
       str.length > max ? `${str.slice(0, max - 3)}...` : str;
-    const embed = createEmbed(message, {
-      color: 'eRed',
-      authorBool: true,
-      title: 'Whoops!',
-      description: 'You need to supply a search term!',
-      footer: 'This command uses https://api.urbandictionary.com/v0/define?',
-      send: false,
-    });
-    if (!args.query.length) {
-      return message.channel.send(embed);
-    }
+
     const query = querystring.stringify({ term: args.query });
 
     const { list } = await fetch(
-      `https://api.urbandictionary.com/v0/define?${query}`
-    ).then((response) => response.json());
+      `https://api.urbandictionary.com/v0/define?${query}`,
+    ).then(response => response.json());
 
     if (!list.length) {
-      embed.setDescription(`No results found for **${args.join(' ')}**.`);
-      return message.channel.send(embed);
+      return createEmbed(message, 'error', {
+        authorBool: true,
+        description: `No results found for **${args.join(' ')}**.`,
+        send: 'channel',
+      });
     }
 
     const [answer] = list;
-    createEmbed(message, {
-      color: 'dBlue',
+    return createEmbed(message, 'default', {
       authorBool: true,
       title: answer.word,
       url: answer.permalink,
@@ -65,7 +58,8 @@ class UrbanCommand extends Command {
           value: `${answer.thumbs_up} thumbs up. ${answer.thumbs_down} thumbs down.`,
         },
       ],
-      footer: 'This command uses https://api.urbandictionary.com/v0/define?',
+      footer:
+        'This command uses https://api.urbandictionary.com/v0/define?',
       send: 'channel',
     });
   }

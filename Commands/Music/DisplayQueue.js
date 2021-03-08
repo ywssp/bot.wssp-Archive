@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const _ = require('lodash');
 const createEmbed = require('../../Functions/EmbedCreator.js');
@@ -8,24 +9,29 @@ class QueueCommand extends Command {
     super('queue', {
       aliases: ['queue'],
       category: 'Music',
+      channel: 'guild'
     });
   }
 
   exec(message) {
-    if (musicCheck('boolean', message, true))
-      return musicCheck('embed', message, true);
+    if (musicCheck(message, {
+      vc: false,
+      sameVC: false,
+      queue: true
+    })) return;
 
     const songDataset = message.guild.musicData.queue.map((song, index) => ({
         name: `${index + 1}. ${song.title}`,
         value: `Channel: ${song.channelName}\nLength: ${song.duration}\nRequested by: ${song.requester}`,
     }));
     const splitDatabase = _.chunk(songDataset, 10);
+		const musicData = message.guild.musicData;
 
     return splitDatabase.forEach(data => 
-      createEmbed(message, {
-        color: 'dBlue',
+      createEmbed(message, 'default', {
         title: 'Queue',
         fields: data,
+				footer: `Paused: ${musicData.songDispatcher.paused?'✅':'❌'} |  Looped: ${musicData.loop?musicData.loop:'❌'} | Volume: ${musicData.volume * 50}`,
         send: 'channel',
       })
     );

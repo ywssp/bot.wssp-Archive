@@ -1,58 +1,58 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
 const visualiseDuration = require('../../Functions/GenerateDurationVisualisation');
 
 class NowPlayingCommand extends Command {
-  constructor() {
-    super('np', {
-      aliases: ['np', 'playing', 'nowplaying'],
-      category: 'Music',
-    });
-  }
+	constructor() {
+		super('np', {
+			aliases: ['np', 'playing', 'nowplaying'],
+			category: 'Music',
+			channel: 'guild'
+		});
+	}
 
-  async exec(message) {
-    if (musicCheck('boolean', message))
-      return musicCheck('embed', message);
+	exec(message) {
+		if (musicCheck(message, {
+			vc: false,
+			sameVC: false
+		})) return;
 
-    const playing = message.guild.musicData.nowPlaying;
-    let duration;
-    if (playing.duration === '🔴 Live Stream') {
-      duration = '🔴 Live Stream';
-    } else {
-      duration = visualiseDuration(message, playing);
-    }
+		const playing = message.guild.musicData.nowPlaying;
+		const musicData = message.guild.musicData;
+		const duration = playing.duration !== '🔴 Live Stream'?visualiseDuration(message, playing):playing.duration;
 
-    return createEmbed(message, {
-      color: 'defaultBlue',
-      title: 'Now Playing',
-      thumbnail: playing.thumbnail,
-      fields: [
-        {
-          name: 'Title',
-          value: playing.title,
-        },
-        {
-          name: 'Channel',
-          value: playing.channelName,
-        },
-        {
-          name: 'Length',
-          value: duration,
-        },
-        {
-          name: 'URL',
-          value: playing.url,
-        },
-        {
-          name: 'Requester',
-          value: playing.requester,
-        },
-      ],
-      authorBool: true,
-      send: 'channel',
-    });
-  }
+		return createEmbed(message, 'default', {
+			title: 'Now Playing',
+			thumbnail: playing.thumbnail,
+			fields: [
+				{
+					name: 'Title',
+					value: playing.title,
+				},
+				{
+					name: 'Channel',
+					value: playing.channelName,
+				},
+				{
+					name: 'Length',
+					value: duration,
+				},
+				{
+					name: 'URL',
+					value: playing.url,
+				},
+				{
+					name: 'Requester',
+					value: playing.requester,
+				},
+			],
+			footer: `Paused: ${musicData.songDispatcher.paused?'✅':'❌'} |  Looped: ${musicData.loop?musicData.loop:'❌'} | Volume: ${musicData.volume * 50}`,
+			send: 'channel'
+		})
+	}
 }
+
 
 module.exports = NowPlayingCommand;

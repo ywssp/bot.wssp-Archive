@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
@@ -7,6 +8,7 @@ class RemoveCommand extends Command {
     super('remove', {
       aliases: ['remove'],
       category: 'Music',
+      channel: 'guild'
     });
   }
 
@@ -15,25 +17,27 @@ class RemoveCommand extends Command {
       type: 'integer',
       prompt: {
         start: (message) =>
-          createEmbed(message, {
+          createEmbed(message, 'query', {
             title: 'Remove track',
-            color: 'qYellow',
             description:
-              'Enter the number of the song you want to remove\nTo see the queue, do `y+queue`',
+              'Enter the number of the song you want to remove',
             authorBool: true,
           }),
       },
     };
     return { songNumber };
   }
+
   exec(message, args) {
-    if (musicCheck('boolean', message, true, args.songNumber))
-      return musicCheck('embed', message, true, args.songNumber);
-    const removedSong = message.guild.musicData.queue[args.songNumber - 1];
-    message.guild.musicData.queue.splice(args.songNumber - 1, 1);
-    return createEmbed(message, {
-      color: 'eRed',
+    if (musicCheck(message, {
+      queue: true,
+      songNumber: args.songNumber,
+    })) return;
+
+    const removedSong = message.guild.musicData.queue.splice(args.songNumber - 1, 1)[0];
+    return createEmbed(message, 'error', {
       title: 'Removed song:',
+			descFalse: true,
       fields: [
         {
           name: 'Title',
