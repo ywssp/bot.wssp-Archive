@@ -25,8 +25,7 @@ class ReloadCommand extends Command {
     try {
       this.handler.reload(args.commandID);
       return message.channel.send(`Reloaded command ${args.commandID}!`);
-    }
- catch {
+    } catch {
       try {
         const category = this.handler.categories
           .map((c) => c)
@@ -38,8 +37,7 @@ class ReloadCommand extends Command {
             category.map((m) => m).length
           } command(s)!`
         );
-      }
- catch (e) {
+      } catch (e) {
         return message.channel.send(
           `${args.commandID} is not a valid category/command ID!`
         );
