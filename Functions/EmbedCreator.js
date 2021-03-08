@@ -26,34 +26,28 @@ module.exports = async function embedCreator(
   );
 
   //check if the author field should be filled
-  settings.authorBool
-    ? createdEmbed.setAuthor(
+  if (settings.authorBool) createdEmbed.setAuthor(
         message.author.username,
         message.author.displayAvatarURL(),
-      )
-    : null;
+      );
 
   //check if a title was given
-  settings.title ? createdEmbed.setTitle(settings.title) : null;
+  if (settings.title) createdEmbed.setTitle(settings.title);
 
   //check if there was a given url
-  settings.url ? createdEmbed.setURL(settings.url) : null;
+  if (settings.url) createdEmbed.setURL(settings.url);
 
   //check if a thumbnail url was given
-  settings.thumbnail
-    ? createdEmbed.setThumbnail(settings.thumbnail)
-    : null;
+  if (settings.thumbnail) createdEmbed.setThumbnail(settings.thumbnail);
 
   //check if a description was given
-  settings.description
-    ? createdEmbed.setDescription(settings.description)
-    : null;
+  if (settings.description) createdEmbed.setDescription(settings.description);
 
   //check if there are given fields
-  settings.fields ? createdEmbed.addFields(settings.fields) : null;
+  if (settings.fields) createdEmbed.addFields(settings.fields);
 
   //check if an image url was given
-  settings.image ? createdEmbed.setImage(settings.image) : null;
+  if (settings.image) createdEmbed.setImage(settings.image);
 
   //check if the footer field should be filled
   if (settings.footer) {
