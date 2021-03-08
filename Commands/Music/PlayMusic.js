@@ -178,6 +178,7 @@ class PlayCommand extends Command {
 
     if (args.error) return;
 
+
     if (typeof args.video === 'string') {
       let video;
       try {
@@ -239,12 +240,15 @@ class PlayCommand extends Command {
       }
     } else {
       const playlistData = args.video.pop();
+      const processingStatus = await message.channel.send('Processing playlist...')
       for (let vid of args.video) {
-        const video = await vid.fetch();
-        message.guild.musicData.queue.push(
-          createSongObj(video, voiceChannel, message),
-        );
+        if (_video.raw.status.privacyStatus !== 'private') {
+          const video = await vid.fetch();
+          message.guild.musicData.queue.push(
+          createSongObj(video, voiceChannel, message));
+        }
       }
+      await processingStatus.delete()
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);
