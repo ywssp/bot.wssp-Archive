@@ -35,8 +35,7 @@ class PlayCommand extends Command {
     if (/^(-c)|(--current)$/.test(searchTerm)) {
       video = message.guild.musicData.nowPlaying.id;
       // If the term is a playlist link, get all video ids of the playlist
-    }
- else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
+    } else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
       const playlist = await youtube.getPlaylist(searchTerm).catch(() =>
         createEmbed(message, "error", {
           description: "The playlist cannot be found!",
@@ -54,16 +53,14 @@ class PlayCommand extends Command {
 
       video.push(playlist);
       // If the term is a video link, get the video id
-    }
- else if (
+    } else if (
       /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/.test(searchTerm)
     ) {
       video = searchTerm
         .replace(/(>|<)/gi, "")
         .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2]
         .split(/[^0-9a-z_-]/i)[0];
-    }
- else {
+    } else {
       const videoFetched = await youtube
         .searchVideos(searchTerm, 1)
         .catch(() => {
@@ -205,8 +202,7 @@ class PlayCommand extends Command {
       let video;
       try {
         video = await youtube.getVideoByID(args.video);
-      }
- catch (e) {
+      } catch (e) {
         console.error(e);
         return createEmbed(message, "error", {
           descShort: "getting the video ID",
@@ -231,8 +227,7 @@ class PlayCommand extends Command {
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);
-      }
- else if (message.guild.musicData.isPlaying) {
+      } else if (message.guild.musicData.isPlaying) {
         return createEmbed(message, "success", {
           title: "New song added to queue",
           fields: [
@@ -262,8 +257,7 @@ class PlayCommand extends Command {
           send: "channel",
         });
       }
-    }
- else {
+    } else {
       const playlistData = args.video.pop();
       const processingStatus = await message.channel.send(
         "Processing playlist..."
@@ -280,8 +274,7 @@ class PlayCommand extends Command {
       if (!message.guild.musicData.isPlaying) {
         message.guild.musicData.isPlaying = true;
         playSong(message);
-      }
- else {
+      } else {
         return createEmbed(message, "success", {
           title: "New playlist added to queue",
           fields: [
