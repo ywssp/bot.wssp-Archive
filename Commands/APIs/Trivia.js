@@ -55,8 +55,7 @@ class TriviaCommand extends Command {
           }_question_count`
         ];
       qTotal = qTotal < 50 ? qTotal : 50;
-    }
- else {
+    } else {
       qTotal = 50;
     }
 
@@ -115,12 +114,10 @@ class TriviaCommand extends Command {
             });
             if (!scores[collected.first().author]) {
               scores[collected.first().author] = 1;
-            }
- else {
+            } else {
               scores[collected.first().author]++;
             }
-          }
- else {
+          } else {
             createEmbed(collected.first(), "error", {
               title: "Wrong!",
               description: `The answer was ${answer[1]}`,
