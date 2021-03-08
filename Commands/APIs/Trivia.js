@@ -50,7 +50,8 @@ class TriviaCommand extends Command {
           }_question_count`
         ];
       qTotal = qTotal < 50 ? qTotal : 50;
-    } else qTotal = 50;
+    }
+ else {qTotal = 50;}
 
     const number = yield generateArgPrompt(
       Argument.range("integer", 1, qTotal, true),
@@ -105,8 +106,10 @@ class TriviaCommand extends Command {
             });
             if (!scores[collected.first().author]) {
               scores[collected.first().author] = 1;
-            } else scores[collected.first().author]++;
-          } else {
+            }
+ else {scores[collected.first().author]++;}
+          }
+ else {
             createEmbed(collected.first(), "error", {
               title: "Wrong!",
               description: `The answer was ${answer[1]}`,
