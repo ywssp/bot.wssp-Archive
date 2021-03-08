@@ -38,7 +38,12 @@ class Client extends AkairoClient {
       },
       {
         disableEveryone: true,
-        presence: 'Loading...'
+        presence: {
+					activity: {
+						name: 'Loading...',
+						type: 'WATCHING'
+					}
+				}
       },
     );
 
