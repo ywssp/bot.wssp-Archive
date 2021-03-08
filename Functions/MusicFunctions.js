@@ -4,8 +4,7 @@ module.exports = {
   unescapeHTML(str) {
     return str.replace(
       /&amp;|&lt;|&gt;|&#39;|&quot;/g,
-      (tag) =>
-        ({
+      (tag) => ({
           "&amp;": "&",
           "&lt;": "<",
           "&gt;": ">",

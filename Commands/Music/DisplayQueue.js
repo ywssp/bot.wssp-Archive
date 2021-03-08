@@ -19,8 +19,7 @@ class QueueCommand extends Command {
         sameVC: false,
         queue: true,
       })
-    )
-      return;
+    ) return;
 
     const songDataset = message.guild.musicData.queue.map((song, index) => ({
       name: `${index + 1}. ${song.title}`,
@@ -29,8 +28,7 @@ class QueueCommand extends Command {
     const splitDatabase = _.chunk(songDataset, 10);
     const { musicData } = message.guild;
 
-    return splitDatabase.forEach((data) =>
-      createEmbed(message, "default", {
+    return splitDatabase.forEach((data) => createEmbed(message, "default", {
         title: "Queue",
         fields: data,
         footer: `Paused: ${
@@ -39,8 +37,7 @@ class QueueCommand extends Command {
           musicData.volume * 50
         }`,
         send: "channel",
-      })
-    );
+      }));
   }
 }
 

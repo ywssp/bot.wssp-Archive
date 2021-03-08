@@ -17,9 +17,8 @@ class TestCommand extends Command {
       "Mic Test",
     ];
     const sent = await message.channel.send("Loading...");
-    const timeDiff =
-      (sent.editedAt || sent.createdAt) -
-      (message.editedAt || message.createdAt);
+    const timeDiff = (sent.editedAt || sent.createdAt)
+      - (message.editedAt || message.createdAt);
     sent.delete();
     const num = Math.floor(Math.random() * phrases.length);
     return createEmbed(message, "default", {

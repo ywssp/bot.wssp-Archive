@@ -20,12 +20,11 @@ class PlayCommand extends Command {
     });
   }
 
-  async *args(message) {
+  async* args(message) {
     const searchTerm = yield {
       match: "content",
       prompt: {
-        start: (message) =>
-          createEmbed(message, "query", {
+        start: (message) => createEmbed(message, "query", {
             title: "Search",
             description:
               "Enter a search term or a YouTube link. Use the `--current` or `-c` flag to add the current song",
@@ -40,12 +39,10 @@ class PlayCommand extends Command {
       video = message.guild.musicData.nowPlaying.id;
       // If the term is a playlist link, get all video ids of the playlist
     } else if (/^.*(youtu.be\/|list=)([^#\&\?]*).*/.test(searchTerm)) {
-      const playlist = await youtube.getPlaylist(searchTerm).catch(() =>
-        createEmbed(message, "error", {
+      const playlist = await youtube.getPlaylist(searchTerm).catch(() => createEmbed(message, "error", {
           description: "The playlist cannot be found!",
           send: "channel",
-        })
-      );
+        }));
 
       video = await playlist.getVideos().catch(() => {
         createEmbed(message, "error", {
@@ -91,8 +88,7 @@ class PlayCommand extends Command {
 
   async exec(message, args) {
     async function playSong(message) {
-      const song =
-        message.guild.musicData.loop === "track"
+      const song = message.guild.musicData.loop === "track"
           ? message.guild.musicData.nowPlaying
           : message.guild.musicData.queue[0];
       await song.voiceChannel
@@ -140,8 +136,7 @@ class PlayCommand extends Command {
                     : "❌"
                 } | Volume: ${message.guild.musicData.volume * 50}`,
               });
-              if (message.guild.musicData.loop !== "track")
-                message.guild.musicData.queue.shift();
+              if (message.guild.musicData.loop !== "track") message.guild.musicData.queue.shift();
               if (message.guild.musicData.queue[0]) {
                 songEmbed.addFields(
                   { name: "\u200B", value: "\u200B" },
@@ -162,8 +157,8 @@ class PlayCommand extends Command {
               }
 
               if (
-                message.guild.musicData.queue.length >= 1 ||
-                message.guild.musicData.loop === "track"
+                message.guild.musicData.queue.length >= 1
+                || message.guild.musicData.loop === "track"
               ) {
                 return playSong(message);
               }
@@ -199,8 +194,7 @@ class PlayCommand extends Command {
         sameVC: false,
         playing: false,
       })
-    )
-      return;
+    ) return;
 
     if (args.error) return;
 
@@ -218,8 +212,8 @@ class PlayCommand extends Command {
       }
 
       if (
-        video.duration.hours !== 0 ||
-        (video.duration.hours >= 1 && video.duration.minutes > 20)
+        video.duration.hours !== 0
+        || (video.duration.hours >= 1 && video.duration.minutes > 20)
       ) {
         return createEmbed(message, "error", {
           description: "I don't support videos longer than 1 hour!",

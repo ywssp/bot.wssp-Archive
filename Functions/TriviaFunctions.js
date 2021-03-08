@@ -58,16 +58,17 @@ module.exports = {
 
     let answerString = "";
     for (const choice of choices) {
-      if (choice.content)
-        answerString += `\n${b64toText(choice.id).toUpperCase()}. ${b64toText(
+      if (choice.content) {
+ answerString += `\n${b64toText(choice.id).toUpperCase()}. ${b64toText(
           choice.content
         )}`;
+}
     }
 
     const embed = createEmbed(message, "query", {
       title: `${b64toText(qObject.category)} | ${
-        b64toText(qObject.difficulty).charAt(0).toUpperCase() +
-        b64toText(qObject.difficulty).slice(1)
+        b64toText(qObject.difficulty).charAt(0).toUpperCase()
+        + b64toText(qObject.difficulty).slice(1)
       }`,
       description: `${b64toText(qObject.question)}\n${answerString}`,
       send: "channel",
@@ -85,13 +86,11 @@ module.exports = {
   generateArgPrompt: (type, title, description) => ({
     type,
     prompt: {
-      start: (message) =>
-        createEmbed(message, "query", {
+      start: (message) => createEmbed(message, "query", {
           title,
           description,
         }),
-      retry: (message) =>
-        createEmbed(message, "error", {
+      retry: (message) => createEmbed(message, "error", {
           description: "Your input is invalid!",
         }),
     },

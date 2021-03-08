@@ -11,20 +11,18 @@ class VolumeCommand extends Command {
     });
   }
 
-  *args() {
+  * args() {
     const volume = yield {
       type: Argument.range("integer", 0, 100, true),
       prompt: {
-        start: (message) =>
-          createEmbed(message, "query", {
+        start: (message) => createEmbed(message, "query", {
             title: "Volume",
             description: `Enter volume to set from 0-100\nCurrent volume: ${
               message.guild.musicData.volume * 50
             }`,
             authorBool: true,
           }),
-        retry: (message) =>
-          createEmbed(message, "error", {
+        retry: (message) => createEmbed(message, "error", {
             description: "The number you entered is not within range!",
             authorBool: true,
           }),
