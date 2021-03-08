@@ -1,4 +1,3 @@
-'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 
@@ -25,7 +24,7 @@ class TestCommand extends Command {
     const num = Math.floor(Math.random() * phrases.length);
     return createEmbed(message, 'default', {
       authorBool: true,
-      description: phrases[num] + `\n\n\n🔂 Round-trip time: ${timeDiff} ms\n💓 Heartbeat: ${this.client.ws.ping} ms`,
+      description: `${phrases[num]}\n\n\n🔂 Round-trip time: ${timeDiff} ms\n💓 Heartbeat: ${this.client.ws.ping} ms`,
       send: 'channel',
     });
   }

@@ -1,4 +1,3 @@
-'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -7,15 +6,18 @@ class ShuffleCommand extends Command {
     super('shuffle', {
       aliases: ['shuffle'],
       category: 'Music',
-      channel: 'guild'
+      channel: 'guild',
     });
   }
 
   exec(message) {
-    if (musicCheck(message, {
-      queue: true,
-    })) return;
-      
+    if (
+      musicCheck(message, {
+        queue: true,
+      })
+    )
+      return;
+
     const shuffle = ([...arr]) => {
       let m = arr.length;
       while (m) {
