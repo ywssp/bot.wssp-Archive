@@ -13,12 +13,7 @@ module.exports = (message, video) => {
   const playBackBarLocation = Math.round((passedTimeMS / totalTimeMS) * 10);
   let playBack = "";
   for (let i = 0; i <= 20; i++) {
-    if (i === playBackBarLocation * 2) {
-      playBack += "●";
-    }
- else {
-      playBack += "—";
-    }
+    playBack += i === playBackBarLocation * 2 ? "●" : "—";
   }
 
   return `${passedTime} | ${totalTime}\n${playBack}`;
