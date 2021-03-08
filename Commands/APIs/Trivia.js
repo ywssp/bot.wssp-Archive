@@ -1,17 +1,17 @@
-const { Command, Argument } = require('discord-akairo');
-const fetch = require('node-fetch');
-const createEmbed = require('../../Functions/EmbedCreator.js');
+const { Command, Argument } = require("discord-akairo");
+const fetch = require("node-fetch");
+const createEmbed = require("../../Functions/EmbedCreator.js");
 const {
   fetchCategories,
   parseQuestionToEmbed,
   generateArgPrompt,
-} = require('../../Functions/TriviaFunctions.js');
+} = require("../../Functions/TriviaFunctions.js");
 
 class TriviaCommand extends Command {
   constructor() {
-    super('trivia', {
-      aliases: ['trivia'],
-      category: 'APIs',
+    super("trivia", {
+      aliases: ["trivia"],
+      category: "APIs",
     });
   }
 
@@ -21,58 +21,54 @@ class TriviaCommand extends Command {
     const category = yield generateArgPrompt(
       (message, phrase) => {
         if (
-          phrase.toLowerCase() === 'any' ||
+          phrase.toLowerCase() === "any" ||
           (phrase >= categories[1][0] && phrase <= categories[1][1])
         )
           return phrase.toLowerCase();
         return null;
       },
-      'Category',
-      `Select a category from below, or type \`any\`\n${categories[0]}`,
+      "Category",
+      `Select a category from below, or type \`any\`\n${categories[0]}`
     );
 
     const difficulty = yield generateArgPrompt(
       (message, phrase) => {
         if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase))
-          return /(easy)|(medium)|(hard)|(any)/gi
-            .exec(phrase)[0]
-            .toLowerCase();
+          return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();
         return null;
       },
-      'Difficulty',
-      'Select a difficulty\n\nAny\nEasy\nMedium\nHard',
+      "Difficulty",
+      "Select a difficulty\n\nAny\nEasy\nMedium\nHard"
     );
 
     let qTotal;
-    if (category !== 'any') {
+    if (category !== "any") {
       const qNumbers = await fetch(
-        `https://opentdb.com/api_count.php?category=${category}`,
+        `https://opentdb.com/api_count.php?category=${category}`
       ).then((response) => response.json());
       qTotal =
         qNumbers.category_question_count[
           `total${
-            difficulty[0] !== 'any' ? `_${difficulty[0]}` : ''
+            difficulty[0] !== "any" ? `_${difficulty[0]}` : ""
           }_question_count`
         ];
       qTotal = qTotal < 50 ? qTotal : 50;
     } else qTotal = 50;
 
     const number = yield generateArgPrompt(
-      Argument.range('integer', 1, qTotal, true),
-      'Number of Questions',
-      `Enter the number of questions to give from 1-${qTotal}`,
+      Argument.range("integer", 1, qTotal, true),
+      "Number of Questions",
+      `Enter the number of questions to give from 1-${qTotal}`
     );
 
     const type = yield generateArgPrompt(
       (message, phrase) => {
         if (/(any)|(multiple)|(boolean)/gi.test(phrase))
-          return /(any)|(multiple)|(boolean)/gi
-            .exec(phrase)[0]
-            .toLowerCase();
+          return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();
         return null;
       },
-      'Type of Questions',
-      'Select the type of questions to give\n\nAny\nMultiple (Multiple Choice)\nBoolean (True or False)',
+      "Type of Questions",
+      "Select the type of questions to give\n\nAny\nMultiple (Multiple Choice)\nBoolean (True or False)"
     );
 
     return { category, difficulty, number, type };
@@ -81,19 +77,15 @@ class TriviaCommand extends Command {
   async exec(message, args) {
     const questionSet = await fetch(
       `https://opentdb.com/api.php?amount=${args.number}${
-        args.category === 'any' ? '' : `&category=${args.category}`
-      }${
-        args.difficulty === 'any'
-          ? ''
-          : `&difficulty=${args.difficulty}`
-      }${
-        args.type === 'any' ? '' : `&type=${args.type}`
-      }&encode=base64`,
+        args.category === "any" ? "" : `&category=${args.category}`
+      }${args.difficulty === "any" ? "" : `&difficulty=${args.difficulty}`}${
+        args.type === "any" ? "" : `&type=${args.type}`
+      }&encode=base64`
     ).then((response) => response.json());
     if (questionSet.response_code !== 0)
-      return createEmbed(message, 'error', {
-        descShort: 'fetching the trivia questions',
-        send: 'command',
+      return createEmbed(message, "error", {
+        descShort: "fetching the trivia questions",
+        send: "command",
       });
 
     const scores = {};
@@ -104,52 +96,48 @@ class TriviaCommand extends Command {
         .awaitMessages((x) => x.content.length > 0, {
           max: 1,
           time: 30000,
-          errors: ['time'],
+          errors: ["time"],
         })
         .then((collected) => {
-          if (
-            collected.first().content.toLowerCase()[0] === answer[0]
-          ) {
-            createEmbed(collected.first(), 'success', {
-              title: 'Yay!',
-              description: 'Your answer is correct!',
+          if (collected.first().content.toLowerCase()[0] === answer[0]) {
+            createEmbed(collected.first(), "success", {
+              title: "Yay!",
+              description: "Your answer is correct!",
               authorBool: true,
-              send: 'channel',
+              send: "channel",
             });
             if (!scores[collected.first().author]) {
               scores[collected.first().author] = 1;
             } else scores[collected.first().author]++;
           } else {
-            createEmbed(collected.first(), 'error', {
-              title: 'Wrong!',
+            createEmbed(collected.first(), "error", {
+              title: "Wrong!",
               description: `The answer was ${answer[1]}`,
               authorBool: true,
-              send: 'channel',
+              send: "channel",
             });
-            if (
-              typeof scores[collected.first().author] !== 'number'
-            ) {
+            if (typeof scores[collected.first().author] !== "number") {
               scores[collected.first().author] = 0;
             }
           }
         })
         .catch(() => {
-          createEmbed(message, 'error', {
-            title: 'Times up!',
+          createEmbed(message, "error", {
+            title: "Times up!",
             description: `The answer was ${answer[1]}`,
-            send: 'channel',
+            send: "channel",
           });
         });
     }
-    let scoreString = '';
+    let scoreString = "";
     for (const user of Object.entries(scores)) {
       scoreString += `\n${user[0]}: ${user[1]}`;
     }
 
-    createEmbed(message, 'default', {
-      title: 'Scores',
+    createEmbed(message, "default", {
+      title: "Scores",
       description: scoreString,
-      send: 'channel',
+      send: "channel",
     });
   }
 }

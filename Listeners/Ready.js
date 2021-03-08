@@ -1,21 +1,17 @@
-const { Listener } = require('discord-akairo');
-const activities = require('../Others/Activities.js');
+const { Listener } = require("discord-akairo");
+const activities = require("../Others/Activities.js");
 
 class ReadyListener extends Listener {
   constructor() {
-    super('ready', {
-      emitter: 'client',
-      event: 'ready',
+    super("ready", {
+      emitter: "client",
+      event: "ready",
     });
   }
 
   exec() {
     const now = new Date();
-    console.log(
-      this.client.user.tag,
-      'started in',
-      now.toUTCString(),
-    );
+    console.log(this.client.user.tag, "started in", now.toUTCString());
 
     const genShuffledActs = (actObj) => {
       const activityArray = [];

@@ -1,12 +1,12 @@
-const { Command } = require('discord-akairo');
-const musicCheck = require('../../Functions/MusicCheck.js');
+const { Command } = require("discord-akairo");
+const musicCheck = require("../../Functions/MusicCheck.js");
 
 class ShuffleCommand extends Command {
   constructor() {
-    super('shuffle', {
-      aliases: ['shuffle'],
-      category: 'Music',
-      channel: 'guild',
+    super("shuffle", {
+      aliases: ["shuffle"],
+      category: "Music",
+      channel: "guild",
     });
   }
 
@@ -27,10 +27,8 @@ class ShuffleCommand extends Command {
       return arr;
     };
 
-    message.guild.musicData.queue = shuffle(
-      message.guild.musicData.queue,
-    );
-    return message.react('🔀');
+    message.guild.musicData.queue = shuffle(message.guild.musicData.queue);
+    return message.react("🔀");
   }
 }
 

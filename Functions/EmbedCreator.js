@@ -1,40 +1,34 @@
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 
-module.exports = async function embedCreator(
-  message,
-  preset,
-  settings,
-) {
+module.exports = async function embedCreator(message, preset, settings) {
   const presets = {
     error: {
-      color: '#FF7043',
-      title: 'Whooops!',
+      color: "#FF7043",
+      title: "Whooops!",
       description: !settings.descFalse
         ? `An error occured while ${
-            settings.descShort
-              ? settings.descShort
-              : 'executing the command'
+            settings.descShort ? settings.descShort : "executing the command"
           }`
-        : '',
+        : "",
     },
-    default: { color: '#03A9F4' },
+    default: { color: "#03A9F4" },
     success: {
-      color: '#8BC34A',
-      title: 'Success!',
+      color: "#8BC34A",
+      title: "Success!",
     },
-    query: { color: '#FFEE58' },
+    query: { color: "#FFEE58" },
   };
 
   // inititalize the embed
   const createdEmbed = new Discord.MessageEmbed(
-    presets[preset] ? presets[preset] : null,
+    presets[preset] ? presets[preset] : null
   );
 
   // check if the author field should be filled
   if (settings.authorBool)
     createdEmbed.setAuthor(
       message.author.username,
-      message.author.displayAvatarURL(),
+      message.author.displayAvatarURL()
     );
 
   // check if a title was given
@@ -44,12 +38,10 @@ module.exports = async function embedCreator(
   if (settings.url) createdEmbed.setURL(settings.url);
 
   // check if a thumbnail url was given
-  if (settings.thumbnail)
-    createdEmbed.setThumbnail(settings.thumbnail);
+  if (settings.thumbnail) createdEmbed.setThumbnail(settings.thumbnail);
 
   // check if a description was given
-  if (settings.description)
-    createdEmbed.setDescription(settings.description);
+  if (settings.description) createdEmbed.setDescription(settings.description);
 
   // check if there are given fields
   if (settings.fields) createdEmbed.addFields(settings.fields);
@@ -62,15 +54,15 @@ module.exports = async function embedCreator(
     createdEmbed.setTimestamp();
     createdEmbed.setFooter(
       settings.footer,
-      message.client.user.displayAvatarURL(),
+      message.client.user.displayAvatarURL()
     );
   }
 
   switch (settings.send) {
-    case 'author':
+    case "author":
       return await message.author.send(createdEmbed);
       break;
-    case 'channel':
+    case "channel":
       return await message.channel.send(createdEmbed);
       break;
     default:

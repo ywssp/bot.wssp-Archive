@@ -1,20 +1,17 @@
-const fetch = require('node-fetch');
-const createEmbed = require('./EmbedCreator.js');
+const fetch = require("node-fetch");
+const createEmbed = require("./EmbedCreator.js");
 
 module.exports = {
   fetchCategories: async () => {
     let categories = await fetch(
-      `https://opentdb.com/api_category.php`,
+      `https://opentdb.com/api_category.php`
     ).then((response) => response.json());
     categories = categories.trivia_categories;
-    const output = [''];
+    const output = [""];
     for (const category of categories) {
       output[0] += `\n${category.id}: ${category.name}`;
     }
-    output.push([
-      categories[0].id,
-      categories[categories.length - 1].id,
-    ]);
+    output.push([categories[0].id, categories[categories.length - 1].id]);
     return output;
   },
   parseQuestionToEmbed: (qObject, message) => {
@@ -30,25 +27,24 @@ module.exports = {
       }
     };
 
-    const b64toText = (str) =>
-      Buffer.from(str, 'base64').toString('utf8');
+    const b64toText = (str) => Buffer.from(str, "base64").toString("utf8");
 
     const choices = [
       {
-        id: 'YQ==',
-        content: '',
+        id: "YQ==",
+        content: "",
       },
       {
-        id: 'Yg==',
-        content: '',
+        id: "Yg==",
+        content: "",
       },
       {
-        id: 'Yw==',
-        content: '',
+        id: "Yw==",
+        content: "",
       },
       {
-        id: 'ZA==',
-        content: '',
+        id: "ZA==",
+        content: "",
       },
     ];
 
@@ -60,25 +56,25 @@ module.exports = {
       choices[i].content = allAnswers[i];
     }
 
-    let answerString = '';
+    let answerString = "";
     for (const choice of choices) {
       if (choice.content)
-        answerString += `\n${b64toText(
-          choice.id,
-        ).toUpperCase()}. ${b64toText(choice.content)}`;
+        answerString += `\n${b64toText(choice.id).toUpperCase()}. ${b64toText(
+          choice.content
+        )}`;
     }
 
-    const embed = createEmbed(message, 'query', {
+    const embed = createEmbed(message, "query", {
       title: `${b64toText(qObject.category)} | ${
         b64toText(qObject.difficulty).charAt(0).toUpperCase() +
         b64toText(qObject.difficulty).slice(1)
       }`,
       description: `${b64toText(qObject.question)}\n${answerString}`,
-      send: 'channel',
+      send: "channel",
     });
 
     const cAnswerLetter = b64toText(
-      choices.find((x) => x.content === cAnswer).id,
+      choices.find((x) => x.content === cAnswer).id
     );
 
     return [
@@ -90,13 +86,13 @@ module.exports = {
     type,
     prompt: {
       start: (message) =>
-        createEmbed(message, 'query', {
+        createEmbed(message, "query", {
           title,
           description,
         }),
       retry: (message) =>
-        createEmbed(message, 'error', {
-          description: 'Your input is invalid!',
+        createEmbed(message, "error", {
+          description: "Your input is invalid!",
         }),
     },
   }),

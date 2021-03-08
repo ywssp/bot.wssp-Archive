@@ -1,14 +1,14 @@
-const { Command } = require('discord-akairo');
-const createEmbed = require('../../Functions/EmbedCreator.js');
-const musicCheck = require('../../Functions/MusicCheck.js');
-const visualiseDuration = require('../../Functions/GenerateDurationVisualisation');
+const { Command } = require("discord-akairo");
+const createEmbed = require("../../Functions/EmbedCreator.js");
+const musicCheck = require("../../Functions/MusicCheck.js");
+const visualiseDuration = require("../../Functions/GenerateDurationVisualisation");
 
 class NowPlayingCommand extends Command {
   constructor() {
-    super('np', {
-      aliases: ['np', 'playing', 'nowplaying'],
-      category: 'Music',
-      channel: 'guild',
+    super("np", {
+      aliases: ["np", "playing", "nowplaying"],
+      category: "Music",
+      channel: "guild",
     });
   }
 
@@ -24,41 +24,41 @@ class NowPlayingCommand extends Command {
     const playing = message.guild.musicData.nowPlaying;
     const { musicData } = message.guild;
     const duration =
-      playing.duration !== '🔴 Live Stream'
+      playing.duration !== "🔴 Live Stream"
         ? visualiseDuration(message, playing)
         : playing.duration;
 
-    return createEmbed(message, 'default', {
-      title: 'Now Playing',
+    return createEmbed(message, "default", {
+      title: "Now Playing",
       thumbnail: playing.thumbnail,
       fields: [
         {
-          name: 'Title',
+          name: "Title",
           value: playing.title,
         },
         {
-          name: 'Channel',
+          name: "Channel",
           value: playing.channelName,
         },
         {
-          name: 'Length',
+          name: "Length",
           value: duration,
         },
         {
-          name: 'URL',
+          name: "URL",
           value: playing.url,
         },
         {
-          name: 'Requester',
+          name: "Requester",
           value: playing.requester,
         },
       ],
       footer: `Paused: ${
-        musicData.songDispatcher.paused ? '✅' : '❌'
-      } |  Looped: ${
-        musicData.loop ? musicData.loop : '❌'
-      } | Volume: ${musicData.volume * 50}`,
-      send: 'channel',
+        musicData.songDispatcher.paused ? "✅" : "❌"
+      } |  Looped: ${musicData.loop ? musicData.loop : "❌"} | Volume: ${
+        musicData.volume * 50
+      }`,
+      send: "channel",
     });
   }
 }

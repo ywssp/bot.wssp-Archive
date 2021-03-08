@@ -1,18 +1,18 @@
-const { Command } = require('discord-akairo');
-const musicCheck = require('../../Functions/MusicCheck.js');
+const { Command } = require("discord-akairo");
+const musicCheck = require("../../Functions/MusicCheck.js");
 
 class NextCommand extends Command {
   constructor() {
-    super('next', {
-      aliases: ['next', 'skip'],
-      category: 'Music',
-      channel: 'guild',
+    super("next", {
+      aliases: ["next", "skip"],
+      category: "Music",
+      channel: "guild",
     });
   }
 
   *args(message) {
     const songNumber = yield {
-      type: 'number',
+      type: "number",
       default: 1,
     };
 
@@ -31,7 +31,7 @@ class NextCommand extends Command {
     message.guild.musicData.queue.splice(0, args.songNumber - 1);
     message.guild.musicData.songDispatcher.resume();
     message.guild.musicData.songDispatcher.end();
-    return message.react('⏭');
+    return message.react("⏭");
   }
 }
 

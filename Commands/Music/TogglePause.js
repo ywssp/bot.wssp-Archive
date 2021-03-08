@@ -1,12 +1,12 @@
-const { Command } = require('discord-akairo');
-const musicCheck = require('../../Functions/MusicCheck.js');
+const { Command } = require("discord-akairo");
+const musicCheck = require("../../Functions/MusicCheck.js");
 
 class PauseCommand extends Command {
   constructor() {
-    super('pause', {
-      aliases: ['pause', 'resume'],
-      category: 'Music',
-      channel: 'guild',
+    super("pause", {
+      aliases: ["pause", "resume"],
+      category: "Music",
+      channel: "guild",
     });
   }
 
@@ -15,10 +15,10 @@ class PauseCommand extends Command {
 
     if (message.guild.musicData.songDispatcher.paused) {
       message.guild.musicData.songDispatcher.resume();
-      return message.react('▶');
+      return message.react("▶");
     }
     message.guild.musicData.songDispatcher.pause(true);
-    return message.react('⏸');
+    return message.react("⏸");
   }
 }
 
