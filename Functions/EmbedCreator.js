@@ -62,12 +62,9 @@ module.exports = async function embedCreator(message, preset, settings) {
   switch (settings.send) {
     case "author":
       return await message.author.send(createdEmbed);
-      break;
     case "channel":
       return await message.channel.send(createdEmbed);
-      break;
     default:
       return createdEmbed;
-      break;
   }
 };

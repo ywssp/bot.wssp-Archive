@@ -65,7 +65,7 @@ module.exports = {
 }
     }
 
-    const embed = createEmbed(message, "query", {
+    createEmbed(message, "query", {
       title: `${b64toText(qObject.category)} | ${
         b64toText(qObject.difficulty).charAt(0).toUpperCase()
         + b64toText(qObject.difficulty).slice(1)

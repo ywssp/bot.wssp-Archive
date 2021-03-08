@@ -1,5 +1,3 @@
-const createEmbed = require("./EmbedCreator.js");
-
 module.exports = {
   unescapeHTML(str) {
     return str.replace(

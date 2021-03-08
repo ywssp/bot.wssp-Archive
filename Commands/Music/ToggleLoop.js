@@ -1,4 +1,4 @@
-const { Command, Argument } = require("discord-akairo");
+const { Command } = require("discord-akairo");
 const createEmbed = require("../../Functions/EmbedCreator.js");
 const musicCheck = require("../../Functions/MusicCheck.js");
 
@@ -11,13 +11,13 @@ class LoopCommand extends Command {
     });
   }
 
-  * args(message) {
+  * args() {
     const loopType = yield {
       type: /^(track)|(queue)|(off)$/,
       prompt: {
-        start: (message) => createEmbed(message, "query", {
+        start: (msg) => createEmbed(msg, "query", {
             title: "Loop",
-            description: `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${message.guild.musicData.loop}`,
+            description: `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${msg.guild.musicData.loop}`,
             authorBool: true,
           }),
       },

@@ -10,7 +10,7 @@ class NextCommand extends Command {
     });
   }
 
-  * args(message) {
+  * args() {
     const songNumber = yield {
       type: "number",
       default: 1,

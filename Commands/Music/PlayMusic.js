@@ -5,8 +5,6 @@ const createEmbed = require("../../Functions/EmbedCreator.js");
 const musicCheck = require("../../Functions/MusicCheck.js");
 const {
   createSongObj,
-  unescapeHTML,
-  formatDuration,
 } = require("../../Functions/MusicFunctions.js");
 
 const youtube = new Youtube(process.env.YOUTUBE);
@@ -24,7 +22,7 @@ class PlayCommand extends Command {
     const searchTerm = yield {
       match: "content",
       prompt: {
-        start: (message) => createEmbed(message, "query", {
+        start: (msg) => createEmbed(msg, "query", {
             title: "Search",
             description:
               "Enter a search term or a YouTube link. Use the `--current` or `-c` flag to add the current song",
@@ -38,8 +36,7 @@ class PlayCommand extends Command {
     if (/^(-c)|(--current)$/.test(searchTerm)) {
       video = message.guild.musicData.nowPlaying.id;
       // If the term is a playlist link, get all video ids of the playlist
-    }
- else if (/^.*(youtu.be\/|list=)([^#\&\?]*).*/.test(searchTerm)) {
+    } else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
       const playlist = await youtube.getPlaylist(searchTerm).catch(() => createEmbed(message, "error", {
           description: "The playlist cannot be found!",
           send: "channel",
@@ -56,15 +53,15 @@ class PlayCommand extends Command {
       video.push(playlist);
       // If the term is a video link, get the video id
     }
- else if (
+    else if (
       /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/.test(searchTerm)
     ) {
       video = searchTerm
         .replace(/(>|<)/gi, "")
         .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2]
-        .split(/[^0-9a-z_\-]/i)[0];
+        .split(/[^0-9a-z_-]/i)[0];
     }
- else {
+    else {
       const videoFetched = await youtube
         .searchVideos(searchTerm, 1)
         .catch(() => {
@@ -90,10 +87,10 @@ class PlayCommand extends Command {
   }
 
   async exec(message, args) {
-    async function playSong(message) {
+    async function playSong(msg) {
       const song = message.guild.musicData.loop === "track"
-          ? message.guild.musicData.nowPlaying
-          : message.guild.musicData.queue[0];
+          ? msg.guild.musicData.nowPlaying
+          : msg.guild.musicData.queue[0];
       await song.voiceChannel
         .join()
         .then((connection) => {
@@ -104,9 +101,9 @@ class PlayCommand extends Command {
               })
             )
             .on("start", async () => {
-              message.guild.musicData.songDispatcher = dispatcher;
-              dispatcher.setVolume(message.guild.musicData.volume);
-              const songEmbed = await createEmbed(message, "default", {
+              msg.guild.musicData.songDispatcher = dispatcher;
+              dispatcher.setVolume(msg.guild.musicData.volume);
+              const songEmbed = await createEmbed(msg, "default", {
                 title: "Now playing:",
                 fields: [
                   {
@@ -132,61 +129,61 @@ class PlayCommand extends Command {
                 ],
                 thumbnail: song.thumbnail,
                 footer: `Paused: ${
-                  message.guild.musicData.songDispatcher.paused ? "✅" : "❌"
+                  msg.guild.musicData.songDispatcher.paused ? "✅" : "❌"
                 } |  Looped: ${
-                  message.guild.musicData.loop
-                    ? message.guild.musicData.loop
+                  msg.guild.musicData.loop
+                    ? msg.guild.musicData.loop
                     : "❌"
-                } | Volume: ${message.guild.musicData.volume * 50}`,
+                } | Volume: ${msg.guild.musicData.volume * 50}`,
               });
-              if (message.guild.musicData.loop !== "track") message.guild.musicData.queue.shift();
-              if (message.guild.musicData.queue[0]) {
+              if (msg.guild.musicData.loop !== "track") msg.guild.musicData.queue.shift();
+              if (msg.guild.musicData.queue[0]) {
                 songEmbed.addFields(
                   { name: "\u200B", value: "\u200B" },
                   {
                     name: "Next Song",
-                    value: message.guild.musicData.queue[0].title,
+                    value: msg.guild.musicData.queue[0].title,
                   }
                 );
               }
-              message.guild.musicData.nowPlaying = song;
-              return message.channel.send(songEmbed);
+              msg.guild.musicData.nowPlaying = song;
+              return msg.channel.send(songEmbed);
             })
             .on("finish", () => {
-              if (message.guild.musicData.loop === "queue") {
-                message.guild.musicData.queue.push(
-                  message.guild.musicData.nowPlaying
+              if (msg.guild.musicData.loop === "queue") {
+                msg.guild.musicData.queue.push(
+                  msg.guild.musicData.nowPlaying
                 );
               }
 
               if (
-                message.guild.musicData.queue.length >= 1
-                || message.guild.musicData.loop === "track"
+                msg.guild.musicData.queue.length >= 1
+                || msg.guild.musicData.loop === "track"
               ) {
-                return playSong(message);
+                return playSong(msg);
               }
-              message.guild.musicData.isPlaying = false;
-              message.guild.musicData.nowPlaying = null;
-              message.guild.musicData.loop = false;
-              message.guild.musicData.songDispatcher = null;
-              return message.guild.me.voice.channel.leave();
+              msg.guild.musicData.isPlaying = false;
+              msg.guild.musicData.nowPlaying = null;
+              msg.guild.musicData.loop = false;
+              msg.guild.musicData.songDispatcher = null;
+              return msg.guild.me.voice.channel.leave();
             })
             .on("error", (e) => {
-              createEmbed(message, "error", {
+              createEmbed(msg, "error", {
                 descShort: "playing the song",
                 send: "channel",
               });
               console.error(e);
-              message.guild.musicData.queue.length = 0;
-              message.guild.musicData.isPlaying = false;
-              message.guild.musicData.nowPlaying = null;
-              message.guild.musicData.songDispatcher = null;
-              return message.guild.me.voice.channel.leave();
+              msg.guild.musicData.queue.length = 0;
+              msg.guild.musicData.isPlaying = false;
+              msg.guild.musicData.nowPlaying = null;
+              msg.guild.musicData.songDispatcher = null;
+              return msg.guild.me.voice.channel.leave();
             });
         })
         .catch((e) => {
           console.error(e);
-          return message.guild.me.voice.channel.leave();
+          return msg.guild.me.voice.channel.leave();
         });
     }
 
@@ -269,7 +266,7 @@ class PlayCommand extends Command {
         "Processing playlist..."
       );
       for (const vid of args.video) {
-        if (_video.raw.status.privacyStatus !== "private") {
+        if (vid.raw.status.privacyStatus !== "private") {
           const video = await vid.fetch();
           message.guild.musicData.queue.push(
             createSongObj(video, voiceChannel, message)
