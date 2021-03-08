@@ -1,11 +1,10 @@
-'use strict';
 const createEmbed = require('./EmbedCreator.js');
 
 module.exports = {
-  unescapeHTML: function(str) {
+  unescapeHTML(str) {
     return str.replace(
       /&amp;|&lt;|&gt;|&#39;|&quot;/g,
-      tag =>
+      (tag) =>
         ({
           '&amp;': '&',
           '&lt;': '<',
@@ -15,12 +14,15 @@ module.exports = {
         }[tag] || tag),
     );
   },
-  createSongObj: function(video, voiceChannel, msg) {
+  createSongObj(video, voiceChannel, msg) {
     return {
       title: video.title,
       channelName: video.channel.title,
-      duration: video.duration === '00:00' ? '🔴 Live Stream' : module.exports.formatDuration(video.duration),
-	    durationMS: video.durationSeconds * 1000,
+      duration:
+        video.duration === '00:00'
+          ? '🔴 Live Stream'
+          : module.exports.formatDuration(video.duration),
+      durationMS: video.durationSeconds * 1000,
       thumbnail: video.thumbnails.high.url,
       url: `https://www.youtube.com/watch?v=${video.raw.id}`,
       id: video.raw.id,
@@ -28,9 +30,9 @@ module.exports = {
       voiceChannel,
     };
   },
-  formatDuration: function({ hours, minutes, seconds }) {
+  formatDuration({ hours, minutes, seconds }) {
     return `${hours ? `${hours}:` : ''}${minutes || '00'}:${
       seconds < 10 ? `0${seconds}` : seconds || '00'
-      }`;
+    }`;
   },
-}
+};

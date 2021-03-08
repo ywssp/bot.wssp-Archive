@@ -1,5 +1,5 @@
-'use strict';
 const http = require('http');
+
 const server = http.createServer((req, res) => {
   res.writeHead(200);
   res.end('Server Ok!');
@@ -39,11 +39,11 @@ class Client extends AkairoClient {
       {
         disableEveryone: true,
         presence: {
-					activity: {
-						name: 'Loading...',
-						type: 'WATCHING'
-					}
-				}
+          activity: {
+            name: 'Loading...',
+            type: 'WATCHING',
+          },
+        },
       },
     );
 
@@ -53,20 +53,26 @@ class Client extends AkairoClient {
       prefix: process.env.PREFIX.split(/|/),
       argumentDefaults: {
         retries: 2,
-        modifyStart: embed => embed.description += 'Type `cancel` to cancel the command',
-        timeout: message => createEmbed(message, 'error', {
-          description: 'The prompt time ran out',
-          authorBool: true
-        }),
-        ended: message => createEmbed(message, 'error', {
-          description: 'Too many retries, the command was cancelled',
-          authorBool: true
-        }),
-        cancel: message => createEmbed(message, 'error', {
-          description: 'The command was cancelled',
-          authorBool: true
-        }),
-      }
+        modifyStart: (embed) =>
+          (embed.description +=
+            'Type `cancel` to cancel the command'),
+        timeout: (message) =>
+          createEmbed(message, 'error', {
+            description: 'The prompt time ran out',
+            authorBool: true,
+          }),
+        ended: (message) =>
+          createEmbed(message, 'error', {
+            description:
+              'Too many retries, the command was cancelled',
+            authorBool: true,
+          }),
+        cancel: (message) =>
+          createEmbed(message, 'error', {
+            description: 'The command was cancelled',
+            authorBool: true,
+          }),
+      },
     });
 
     this.listenerHandler = new ListenerHandler(this, {

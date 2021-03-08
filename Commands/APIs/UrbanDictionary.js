@@ -1,4 +1,3 @@
-'use strict';
 const { Command } = require('discord-akairo');
 const fetch = require('node-fetch');
 const querystring = require('querystring');
@@ -14,7 +13,7 @@ class UrbanCommand extends Command {
           id: 'query',
           match: 'content',
           prompt: {
-            start: message =>
+            start: (message) =>
               createEmbed(message, {
                 title: 'Search',
                 color: 'qYellow',
@@ -35,7 +34,7 @@ class UrbanCommand extends Command {
 
     const { list } = await fetch(
       `https://api.urbandictionary.com/v0/define?${query}`,
-    ).then(response => response.json());
+    ).then((response) => response.json());
 
     if (!list.length) {
       return createEmbed(message, 'error', {

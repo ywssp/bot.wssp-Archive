@@ -1,4 +1,3 @@
-'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -7,24 +6,27 @@ class NextCommand extends Command {
     super('next', {
       aliases: ['next', 'skip'],
       category: 'Music',
-      channel: 'guild'
+      channel: 'guild',
     });
   }
 
   *args(message) {
     const songNumber = yield {
       type: 'number',
-      default: 1
-    }
+      default: 1,
+    };
 
     return { songNumber };
   }
 
   exec(message, args) {
-    if (musicCheck(message, {
-      queue: args.songNumber > 1?true:false,
-      songNumber: args.songNumber,
-    })) return;
+    if (
+      musicCheck(message, {
+        queue: args.songNumber > 1,
+        songNumber: args.songNumber,
+      })
+    )
+      return;
 
     message.guild.musicData.queue.splice(0, args.songNumber - 1);
     message.guild.musicData.songDispatcher.resume();

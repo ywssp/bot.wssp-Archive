@@ -1,4 +1,3 @@
-'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -7,7 +6,7 @@ class LeaveCommand extends Command {
     super('leave', {
       aliases: ['leave', 'disconnect', 'dc'],
       category: 'Music',
-      channel: 'guild'
+      channel: 'guild',
     });
   }
 

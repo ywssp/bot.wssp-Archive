@@ -1,5 +1,4 @@
-'use strict';
-const { Command , Argument } = require('discord-akairo');
+const { Command, Argument } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -8,23 +7,22 @@ class LoopCommand extends Command {
     super('loop', {
       aliases: ['loop', 'repeat'],
       category: 'Music',
-      channel: 'guild'
+      channel: 'guild',
     });
   }
 
-*args(message) {
+  *args(message) {
     const loopType = yield {
       type: /^(track)|(queue)|(off)$/,
       prompt: {
         start: (message) =>
           createEmbed(message, 'query', {
             title: 'Loop',
-            description:
-              `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${message.guild.musicData.loop}`,
+            description: `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${message.guild.musicData.loop}`,
             authorBool: true,
           }),
       },
-    }
+    };
 
     return { loopType };
   }
@@ -32,7 +30,7 @@ class LoopCommand extends Command {
   exec(message, args) {
     if (musicCheck(message)) return;
 
-    message.guild.musicData.loop = args.loopType.match[0]
+    message.guild.musicData.loop = args.loopType.match[0];
     return message.react('🔂');
   }
 }

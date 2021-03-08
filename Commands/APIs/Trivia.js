@@ -1,4 +1,3 @@
-'use strict';
 const { Command, Argument } = require('discord-akairo');
 const fetch = require('node-fetch');
 const createEmbed = require('../../Functions/EmbedCreator.js');
@@ -26,10 +25,10 @@ class TriviaCommand extends Command {
           (phrase >= categories[1][0] && phrase <= categories[1][1])
         )
           return phrase.toLowerCase();
-        else return null;
+        return null;
       },
       'Category',
-      'Select a category from below, or type `any`\n' + categories[0],
+      `Select a category from below, or type \`any\`\n${categories[0]}`,
     );
 
     const difficulty = yield generateArgPrompt(
@@ -48,7 +47,7 @@ class TriviaCommand extends Command {
     if (category !== 'any') {
       const qNumbers = await fetch(
         `https://opentdb.com/api_count.php?category=${category}`,
-      ).then(response => response.json());
+      ).then((response) => response.json());
       qTotal =
         qNumbers.category_question_count[
           `total${
@@ -90,24 +89,24 @@ class TriviaCommand extends Command {
       }${
         args.type === 'any' ? '' : `&type=${args.type}`
       }&encode=base64`,
-    ).then(response => response.json());
+    ).then((response) => response.json());
     if (questionSet.response_code !== 0)
       return createEmbed(message, 'error', {
         descShort: 'fetching the trivia questions',
         send: 'command',
       });
 
-    let scores = {};
+    const scores = {};
 
-    for (let question of questionSet.results) {
+    for (const question of questionSet.results) {
       const answer = parseQuestionToEmbed(question, message);
       await message.channel
-        .awaitMessages(x => x.content.length > 0, {
+        .awaitMessages((x) => x.content.length > 0, {
           max: 1,
           time: 30000,
           errors: ['time'],
         })
-        .then(collected => {
+        .then((collected) => {
           if (
             collected.first().content.toLowerCase()[0] === answer[0]
           ) {
@@ -123,7 +122,7 @@ class TriviaCommand extends Command {
           } else {
             createEmbed(collected.first(), 'error', {
               title: 'Wrong!',
-              description: 'The answer was ' + answer[1],
+              description: `The answer was ${answer[1]}`,
               authorBool: true,
               send: 'channel',
             });
@@ -137,14 +136,14 @@ class TriviaCommand extends Command {
         .catch(() => {
           createEmbed(message, 'error', {
             title: 'Times up!',
-            description: 'The answer was ' + answer[1],
+            description: `The answer was ${answer[1]}`,
             send: 'channel',
           });
         });
     }
     let scoreString = '';
-    for (let user of Object.entries(scores)) {
-      scoreString += '\n' + user[0] + ': ' + user[1];
+    for (const user of Object.entries(scores)) {
+      scoreString += `\n${user[0]}: ${user[1]}`;
     }
 
     createEmbed(message, 'default', {
