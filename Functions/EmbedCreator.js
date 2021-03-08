@@ -26,11 +26,11 @@ module.exports = async function embedCreator(message, preset, settings) {
 
   // check if the author field should be filled
   if (settings.authorBool) {
- createdEmbed.setAuthor(
+    createdEmbed.setAuthor(
       message.author.username,
       message.author.displayAvatarURL()
     );
-}
+  }
 
   // check if a title was given
   if (settings.title) createdEmbed.setTitle(settings.title);

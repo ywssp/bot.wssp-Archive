@@ -11,11 +11,12 @@ class RemoveCommand extends Command {
     });
   }
 
-  * args() {
+  *args() {
     const songNumber = yield {
       type: "integer",
       prompt: {
-        start: (message) => createEmbed(message, "query", {
+        start: (message) =>
+          createEmbed(message, "query", {
             title: "Remove track",
             description: "Enter the number of the song you want to remove",
             authorBool: true,
@@ -31,7 +32,8 @@ class RemoveCommand extends Command {
         queue: true,
         songNumber: args.songNumber,
       })
-    ) return;
+    )
+      return;
 
     const removedSong = message.guild.musicData.queue.splice(
       args.songNumber - 1,

@@ -13,7 +13,8 @@ class UrbanCommand extends Command {
           id: "query",
           match: "content",
           prompt: {
-            start: (message) => createEmbed(message, {
+            start: (message) =>
+              createEmbed(message, {
                 title: "Search",
                 color: "qYellow",
                 description: "Enter a search term",
@@ -26,7 +27,8 @@ class UrbanCommand extends Command {
   }
 
   async exec(message, args) {
-    const trim = (str, max) => (str.length > max ? `${str.slice(0, max - 3)}...` : str);
+    const trim = (str, max) =>
+      str.length > max ? `${str.slice(0, max - 3)}...` : str;
 
     const query = querystring.stringify({ term: args.query });
 
