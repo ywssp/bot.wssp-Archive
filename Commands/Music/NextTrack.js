@@ -25,7 +25,9 @@ class NextCommand extends Command {
         queue: args.songNumber > 1,
         songNumber: args.songNumber,
       })
-    ) {return;}
+    ) {
+      return;
+    }
 
     message.guild.musicData.queue.splice(0, args.songNumber - 1);
     message.guild.musicData.songDispatcher.resume();

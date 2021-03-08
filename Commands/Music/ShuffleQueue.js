@@ -15,7 +15,9 @@ class ShuffleCommand extends Command {
       musicCheck(message, {
         queue: true,
       })
-    ) {return;}
+    ) {
+      return;
+    }
 
     const shuffle = ([...arr]) => {
       let m = arr.length;

@@ -30,10 +30,14 @@ module.exports = (
   };
 
   if (checks.vc) embedData.description = "You aren't inside a voice channel!";
-  if (checks.sameVC) {embedData.description = "You aren't inside the music voice channel!";}
+  if (checks.sameVC) {
+    embedData.description = "You aren't inside the music voice channel!";
+  }
   if (checks.playing) embedData.description = "There is no song playing!";
   if (checks.queue) embedData.description = "There are no songs in the queue!";
-  if (checks.songNumber) {embedData.description = "That isn't a valid song number!";}
+  if (checks.songNumber) {
+    embedData.description = "That isn't a valid song number!";
+  }
   if (embedData.description) {
     createEmbed(message, "error", embedData);
     return true;

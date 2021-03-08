@@ -23,7 +23,9 @@ class TriviaCommand extends Command {
         if (
           phrase.toLowerCase() === "any" ||
           (phrase >= categories[1][0] && phrase <= categories[1][1])
-        ) {return phrase.toLowerCase();}
+        ) {
+          return phrase.toLowerCase();
+        }
         return null;
       },
       "Category",
@@ -32,7 +34,9 @@ class TriviaCommand extends Command {
 
     const difficulty = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase)) {return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();}
+        if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase)) {
+          return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();
+        }
         return null;
       },
       "Difficulty",
@@ -51,8 +55,7 @@ class TriviaCommand extends Command {
           }_question_count`
         ];
       qTotal = qTotal < 50 ? qTotal : 50;
-    }
- else {
+    } else {
       qTotal = 50;
     }
 
@@ -64,7 +67,9 @@ class TriviaCommand extends Command {
 
     const type = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(any)|(multiple)|(boolean)/gi.test(phrase)) {return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();}
+        if (/(any)|(multiple)|(boolean)/gi.test(phrase)) {
+          return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();
+        }
         return null;
       },
       "Type of Questions",
@@ -109,12 +114,10 @@ class TriviaCommand extends Command {
             });
             if (!scores[collected.first().author]) {
               scores[collected.first().author] = 1;
-            }
- else {
+            } else {
               scores[collected.first().author]++;
             }
-          }
- else {
+          } else {
             createEmbed(collected.first(), "error", {
               title: "Wrong!",
               description: `The answer was ${answer[1]}`,
