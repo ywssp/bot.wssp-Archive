@@ -32,8 +32,7 @@ class RemoveCommand extends Command {
         queue: true,
         songNumber: args.songNumber,
       })
-    )
-      return;
+    ) {return;}
 
     const removedSong = message.guild.musicData.queue.splice(
       args.songNumber - 1,
