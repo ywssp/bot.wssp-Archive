@@ -36,7 +36,8 @@ class PlayCommand extends Command {
     if (/^(-c)|(--current)$/.test(searchTerm)) {
       video = message.guild.musicData.nowPlaying.id;
       // If the term is a playlist link, get all video ids of the playlist
-    } else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
+    }
+ else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
       const playlist = await youtube.getPlaylist(searchTerm).catch(() => createEmbed(message, "error", {
           description: "The playlist cannot be found!",
           send: "channel",
