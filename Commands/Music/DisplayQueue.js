@@ -1,14 +1,14 @@
-const { Command } = require("discord-akairo");
-const _ = require("lodash");
-const createEmbed = require("../../Functions/EmbedCreator.js");
-const musicCheck = require("../../Functions/MusicCheck.js");
+const { Command } = require('discord-akairo');
+const _ = require('lodash');
+const createEmbed = require('../../Functions/EmbedCreator.js');
+const musicCheck = require('../../Functions/MusicCheck.js');
 
 class QueueCommand extends Command {
   constructor() {
-    super("queue", {
-      aliases: ["queue"],
-      category: "Music",
-      channel: "guild",
+    super('queue', {
+      aliases: ['queue'],
+      category: 'Music',
+      channel: 'guild',
     });
   }
 
@@ -31,15 +31,15 @@ class QueueCommand extends Command {
     const { musicData } = message.guild;
 
     return splitDatabase.forEach((data) =>
-      createEmbed(message, "default", {
-        title: "Queue",
+      createEmbed(message, 'default', {
+        title: 'Queue',
         fields: data,
         footer: `Paused: ${
-          musicData.songDispatcher.paused ? "✅" : "❌"
-        } |  Looped: ${musicData.loop ? musicData.loop : "❌"} | Volume: ${
+          musicData.songDispatcher.paused ? '✅' : '❌'
+        } |  Looped: ${musicData.loop ? musicData.loop : '❌'} | Volume: ${
           musicData.volume * 50
         }`,
-        send: "channel",
+        send: 'channel',
       })
     );
   }

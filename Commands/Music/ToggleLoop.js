@@ -1,13 +1,13 @@
-const { Command } = require("discord-akairo");
-const createEmbed = require("../../Functions/EmbedCreator.js");
-const musicCheck = require("../../Functions/MusicCheck.js");
+const { Command } = require('discord-akairo');
+const createEmbed = require('../../Functions/EmbedCreator.js');
+const musicCheck = require('../../Functions/MusicCheck.js');
 
 class LoopCommand extends Command {
   constructor() {
-    super("loop", {
-      aliases: ["loop", "repeat"],
-      category: "Music",
-      channel: "guild",
+    super('loop', {
+      aliases: ['loop', 'repeat'],
+      category: 'Music',
+      channel: 'guild',
     });
   }
 
@@ -16,8 +16,8 @@ class LoopCommand extends Command {
       type: /^(track)|(queue)|(off)$/,
       prompt: {
         start: (msg) =>
-          createEmbed(msg, "query", {
-            title: "Loop",
+          createEmbed(msg, 'query', {
+            title: 'Loop',
             description: `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${msg.guild.musicData.loop}`,
             authorBool: true,
           }),
@@ -31,7 +31,7 @@ class LoopCommand extends Command {
     if (musicCheck(message)) return;
 
     message.guild.musicData.loop = args.loopType.match[0];
-    return message.react("🔂");
+    return message.react('🔂');
   }
 }
 

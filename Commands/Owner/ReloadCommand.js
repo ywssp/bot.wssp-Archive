@@ -1,22 +1,22 @@
-const { Command } = require("discord-akairo");
+const { Command } = require('discord-akairo');
 
 class ReloadCommand extends Command {
   constructor() {
-    super("reload", {
-      aliases: ["reload"],
+    super('reload', {
+      aliases: ['reload'],
       args: [
         {
-          id: "commandID",
-          default: "all",
+          id: 'commandID',
+          default: 'all',
         },
       ],
       ownerOnly: true,
-      category: "owner-only",
+      category: 'owner-only',
     });
   }
 
   exec(message, args) {
-    if (args.commandID == "all") {
+    if (args.commandID == 'all') {
       this.handler.reloadAll();
       return message.channel.send(
         `Reloaded ${this.handler.modules.map((m) => m).length} command(s)!`

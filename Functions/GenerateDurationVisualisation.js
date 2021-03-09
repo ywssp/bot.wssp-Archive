@@ -1,4 +1,4 @@
-const { formatDuration } = require("./MusicFunctions.js");
+const { formatDuration } = require('./MusicFunctions.js');
 
 module.exports = (message, video) => {
   const passedTimeMS = message.guild.musicData.songDispatcher.streamTime;
@@ -11,9 +11,9 @@ module.exports = (message, video) => {
   const totalTime = video.duration;
 
   const playBackBarLocation = Math.round((passedTimeMS / totalTimeMS) * 10);
-  let playBack = "";
+  let playBack = '';
   for (let i = 0; i <= 20; i++) {
-    playBack += i === playBackBarLocation * 2 ? "●" : "—";
+    playBack += i === playBackBarLocation * 2 ? '●' : '—';
   }
 
   return `${passedTime} | ${totalTime}\n${playBack}`;

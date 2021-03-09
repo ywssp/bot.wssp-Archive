@@ -1,22 +1,22 @@
-const Discord = require("discord.js");
+const Discord = require('discord.js');
 
 module.exports = async function embedCreator(message, preset, settings) {
   const presets = {
     error: {
-      color: "#FF7043",
-      title: "Whooops!",
+      color: '#FF7043',
+      title: 'Whooops!',
       description: !settings.descFalse
         ? `An error occured while ${
-            settings.descShort ? settings.descShort : "executing the command"
+            settings.descShort ? settings.descShort : 'executing the command'
           }`
-        : "",
+        : '',
     },
-    default: { color: "#03A9F4" },
+    default: { color: '#03A9F4' },
     success: {
-      color: "#8BC34A",
-      title: "Success!",
+      color: '#8BC34A',
+      title: 'Success!',
     },
-    query: { color: "#FFEE58" },
+    query: { color: '#FFEE58' },
   };
 
   // inititalize the embed
@@ -60,9 +60,9 @@ module.exports = async function embedCreator(message, preset, settings) {
   }
 
   switch (settings.send) {
-    case "author":
+    case 'author':
       return await message.author.send(createdEmbed);
-    case "channel":
+    case 'channel':
       return await message.channel.send(createdEmbed);
     default:
       return createdEmbed;

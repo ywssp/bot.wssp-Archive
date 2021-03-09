@@ -1,12 +1,12 @@
-const { Command } = require("discord-akairo");
-const musicCheck = require("../../Functions/MusicCheck.js");
+const { Command } = require('discord-akairo');
+const musicCheck = require('../../Functions/MusicCheck.js');
 
 class ClearCommand extends Command {
   constructor() {
-    super("clear", {
-      aliases: ["clear"],
-      category: "Music",
-      channel: "guild",
+    super('clear', {
+      aliases: ['clear'],
+      category: 'Music',
+      channel: 'guild',
     });
   }
 
@@ -14,7 +14,7 @@ class ClearCommand extends Command {
     if (musicCheck(message)) return;
 
     message.guild.musicData.queue = 0;
-    return message.react("🧹");
+    return message.react('🧹');
   }
 }
 

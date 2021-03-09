@@ -4,11 +4,11 @@ module.exports = {
       /&amp;|&lt;|&gt;|&#39;|&quot;/g,
       (tag) =>
         ({
-          "&amp;": "&",
-          "&lt;": "<",
-          "&gt;": ">",
-          "&#39;": "'",
-          "&quot;": '"',
+          '&amp;': '&',
+          '&lt;': '<',
+          '&gt;': '>',
+          '&#39;': ''',
+          '&quot;': ''',
         }[tag] || tag)
     );
   },
@@ -17,8 +17,8 @@ module.exports = {
       title: video.title,
       channelName: video.channel.title,
       duration:
-        video.duration === "00:00"
-          ? "🔴 Live Stream"
+        video.duration === '00:00'
+          ? '🔴 Live Stream'
           : module.exports.formatDuration(video.duration),
       durationMS: video.durationSeconds * 1000,
       thumbnail: video.thumbnails.high.url,
@@ -29,8 +29,8 @@ module.exports = {
     };
   },
   formatDuration({ hours, minutes, seconds }) {
-    return `${hours ? `${hours}:` : ""}${minutes || "00"}:${
-      seconds < 10 ? `0${seconds}` : seconds || "00"
+    return `${hours ? `${hours}:` : ''}${minutes || '00'}:${
+      seconds < 10 ? `0${seconds}` : seconds || '00'
     }`;
   },
 };
