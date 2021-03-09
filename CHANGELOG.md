@@ -1,16 +1,20 @@
 # Update 3.0.0
 
 ## General
+
 - All Files now use strict mode
 - Added some NPM modules
 - Default command settings are now defined
 
 ## Commands
+
 ### APIs
+
 - Added `UselessFact.js`
 - Optimized `UrbanDictionary.js`
 
 ### Music
+
 - All commands in this category are now restricted to guilds
 - Merged `PauseMusic.js` and `ResumeMusic.js` into `TogglePause.js`
 - Merged `SkipTrack.js` and `SkipToTrack.js`
@@ -20,6 +24,6 @@
 - `volume`, `queue`, `nowplaying`, and `play` now display the music player settings
 
 ## Functions
+
 - `EmbedCreator.js` now uses presets
 - Optimized `MusicCheck.js`
-

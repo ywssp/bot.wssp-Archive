@@ -15,15 +15,17 @@ class TriviaCommand extends Command {
     });
   }
 
-  async* args() {
+  async *args() {
     const categories = await fetchCategories();
 
     const category = yield generateArgPrompt(
       (message, phrase) => {
         if (
-          phrase.toLowerCase() === "any"
-          || (phrase >= categories[1][0] && phrase <= categories[1][1])
-        ) return phrase.toLowerCase();
+          phrase.toLowerCase() === "any" ||
+          (phrase >= categories[1][0] && phrase <= categories[1][1])
+        ) {
+          return phrase.toLowerCase();
+        }
         return null;
       },
       "Category",
@@ -32,7 +34,9 @@ class TriviaCommand extends Command {
 
     const difficulty = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase)) return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();
+        if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase)) {
+          return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();
+        }
         return null;
       },
       "Difficulty",
@@ -44,14 +48,16 @@ class TriviaCommand extends Command {
       const qNumbers = await fetch(
         `https://opentdb.com/api_count.php?category=${category}`
       ).then((response) => response.json());
-      qTotal = qNumbers.category_question_count[
+      qTotal =
+        qNumbers.category_question_count[
           `total${
             difficulty[0] !== "any" ? `_${difficulty[0]}` : ""
           }_question_count`
         ];
       qTotal = qTotal < 50 ? qTotal : 50;
+    } else {
+      qTotal = 50;
     }
- else {qTotal = 50;}
 
     const number = yield generateArgPrompt(
       Argument.range("integer", 1, qTotal, true),
@@ -61,7 +67,9 @@ class TriviaCommand extends Command {
 
     const type = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(any)|(multiple)|(boolean)/gi.test(phrase)) return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();
+        if (/(any)|(multiple)|(boolean)/gi.test(phrase)) {
+          return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();
+        }
         return null;
       },
       "Type of Questions",
@@ -80,11 +88,11 @@ class TriviaCommand extends Command {
       }&encode=base64`
     ).then((response) => response.json());
     if (questionSet.response_code !== 0) {
- return createEmbed(message, "error", {
+      return createEmbed(message, "error", {
         descShort: "fetching the trivia questions",
         send: "command",
       });
-}
+    }
 
     const scores = {};
 
@@ -106,10 +114,10 @@ class TriviaCommand extends Command {
             });
             if (!scores[collected.first().author]) {
               scores[collected.first().author] = 1;
+            } else {
+              scores[collected.first().author]++;
             }
- else {scores[collected.first().author]++;}
-          }
- else {
+          } else {
             createEmbed(collected.first(), "error", {
               title: "Wrong!",
               description: `The answer was ${answer[1]}`,

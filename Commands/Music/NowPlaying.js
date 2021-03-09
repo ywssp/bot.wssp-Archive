@@ -18,11 +18,14 @@ class NowPlayingCommand extends Command {
         vc: false,
         sameVC: false,
       })
-    ) return;
+    ) {
+      return;
+    }
 
     const playing = message.guild.musicData.nowPlaying;
     const { musicData } = message.guild;
-    const duration = playing.duration !== "🔴 Live Stream"
+    const duration =
+      playing.duration !== "🔴 Live Stream"
         ? visualiseDuration(message, playing)
         : playing.duration;
 

@@ -11,11 +11,12 @@ class LoopCommand extends Command {
     });
   }
 
-  * args() {
+  *args() {
     const loopType = yield {
       type: /^(track)|(queue)|(off)$/,
       prompt: {
-        start: (msg) => createEmbed(msg, "query", {
+        start: (msg) =>
+          createEmbed(msg, "query", {
             title: "Loop",
             description: `Enter the type of loop that you want\n\`track\`, \`queue\`, \`off\`\nCurrent: ${msg.guild.musicData.loop}`,
             authorBool: true,

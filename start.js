@@ -53,16 +53,20 @@ class Client extends AkairoClient {
       prefix: process.env.PREFIX.split(/|/),
       argumentDefaults: {
         retries: 2,
-        modifyStart: (embed) => (embed.description += "Type `cancel` to cancel the command"),
-        timeout: (message) => createEmbed(message, "error", {
+        modifyStart: (embed) =>
+          (embed.description += "Type `cancel` to cancel the command"),
+        timeout: (message) =>
+          createEmbed(message, "error", {
             description: "The prompt time ran out",
             authorBool: true,
           }),
-        ended: (message) => createEmbed(message, "error", {
+        ended: (message) =>
+          createEmbed(message, "error", {
             description: "Too many retries, the command was cancelled",
             authorBool: true,
           }),
-        cancel: (message) => createEmbed(message, "error", {
+        cancel: (message) =>
+          createEmbed(message, "error", {
             description: "The command was cancelled",
             authorBool: true,
           }),
