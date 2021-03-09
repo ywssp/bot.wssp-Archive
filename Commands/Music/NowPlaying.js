@@ -18,7 +18,7 @@ class NowPlayingCommand extends Command {
         vc: false,
         sameVC: false,
       })
-    ) return false;
+    ) { return false };
 
     const playing = message.guild.musicData.nowPlaying;
     const { musicData } = message.guild;

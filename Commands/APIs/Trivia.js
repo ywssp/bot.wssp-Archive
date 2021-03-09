@@ -26,7 +26,7 @@ class TriviaCommand extends Command {
         ) {
           return phrase.toLowerCase();
         }
-        
+
         return null;
       },
       'Category',
@@ -35,8 +35,8 @@ class TriviaCommand extends Command {
 
     const difficulty = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(easy)|(medium)|(hard)|(any)/gi.test(phrase)) {
-          return /(easy)|(medium)|(hard)|(any)/gi.exec(phrase)[0].toLowerCase();
+        if ((/(easy)|(medium)|(hard)|(any)/gi).test(phrase)) {
+          return (/(easy)|(medium)|(hard)|(any)/gi).exec(phrase)[0].toLowerCase();
         }
         return null;
       },
@@ -143,7 +143,7 @@ class TriviaCommand extends Command {
       scoreString += `\n${user[0]}: ${user[1]}`;
     }
 
-    createEmbed(message, 'default', {
+    return createEmbed(message, 'default', {
       title: 'Scores',
       description: scoreString,
       send: 'channel',

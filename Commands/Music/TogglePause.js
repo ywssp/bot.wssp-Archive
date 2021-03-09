@@ -16,9 +16,10 @@ class PauseCommand extends Command {
     if (message.guild.musicData.songDispatcher.paused) {
       message.guild.musicData.songDispatcher.resume();
       return message.react('▶');
+    } else {
+       message.guild.musicData.songDispatcher.pause(true);
+       return message.react('⏸');
     }
-    message.guild.musicData.songDispatcher.pause(true);
-    return message.react('⏸');
   }
 }
 

@@ -19,7 +19,7 @@ class QueueCommand extends Command {
         sameVC: false,
         queue: true,
       })
-    ) return false;
+    ) { return false };
 
     const songDataset = message.guild.musicData.queue.map((song, index) => ({
       name: `${index + 1}. ${song.title}`,

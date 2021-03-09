@@ -11,9 +11,10 @@ class ClearCommand extends Command {
   }
 
   exec(message) {
-    if (musicCheck(message)) return false;
+    if (musicCheck(message)) { return false} ;
 
     message.guild.musicData.queue = 0;
+
     return message.react('🧹');
   }
 }

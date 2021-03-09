@@ -192,11 +192,9 @@ class PlayCommand extends Command {
         sameVC: false,
         playing: false,
       })
-    ) {
-      return;
-    }
+    ) { return false };
 
-    if (args.error) return;
+    if (args.error) { return false };
 
     if (typeof args.video === 'string') {
       let video;

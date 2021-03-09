@@ -15,7 +15,7 @@ class ShuffleCommand extends Command {
       musicCheck(message, {
         queue: true,
       })
-    ) return false;
+    ) { return false };
 
     const shuffle = ([...arr]) => {
       let m = arr.length;
@@ -25,8 +25,8 @@ class ShuffleCommand extends Command {
       }
       return arr;
     };
-
     message.guild.musicData.queue = shuffle(message.guild.musicData.queue);
+
     return message.react('🔀');
   }
 }

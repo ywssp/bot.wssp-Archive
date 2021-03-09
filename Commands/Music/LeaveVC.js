@@ -11,11 +11,12 @@ class LeaveCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message)) return false;
+    if (musicCheck(message)) { return false };
 
     message.guild.musicData.queue = 0;
     message.guild.musicData.loop = 'off';
     message.guild.musicData.songDispatcher.end();
+
     return message.react('🛑');
   }
 }
