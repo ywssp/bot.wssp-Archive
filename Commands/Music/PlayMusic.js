@@ -216,7 +216,7 @@ class PlayCommand extends Command {
         (video.duration.hours >= 1 && video.duration.minutes > 20)
       ) {
         return createEmbed(message, 'error', {
-          description: 'I don't support videos longer than 1 hour!',
+          description: 'I don\'t support videos longer than 1 hour!',
           authorBool: true,
           send: 'channel',
         });
