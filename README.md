@@ -28,7 +28,7 @@ Used in [start.js](start.js).
 
 your `.env` file should look like this:
 
-```
+```shell
 TOKEN=NzIwNjA1ODE4MzgyMzE5Njk4.XuIadw.kjtUXvBOzzTxepM_R3y5eW7mBnc
 YOUTUBE=AIzaSyDfNuFz4A8O7oliOGqVdtrJCsjFbYpBqCU
 OWNER=689607114011705439
@@ -39,21 +39,21 @@ PREFIX='+|!|/'
 
 ### Discord
 
-- [Discord.js](https://discord.js.org/#/)
-- [discord-akairo](https://discord-akairo.github.io/#/)
+-  [Discord.js](https://discord.js.org/#/)
+-  [discord-akairo](https://discord-akairo.github.io/#/)
 
 ### Music Commands
 
-- [simple-youtube-api](https://www.npmjs.com/package/simple-youtube-api)
-- [ytd-core](https://www.npmjs.com/package/ytdl-core)
+-  [simple-youtube-api](https://www.npmjs.com/package/simple-youtube-api)
+-  [ytd-core](https://www.npmjs.com/package/ytdl-core)
 
 ### Services
 
-- [Repl.it](https://repl.it/)
+-  [Repl.it](https://repl.it/)
 
 ### Others
 
-- Other npm packages on [package.json](package.json)
+-  Other npm packages on [package.json](package.json)
 
 ## Credits
 
