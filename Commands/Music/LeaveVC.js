@@ -11,7 +11,7 @@ class LeaveCommand extends Command {
   }
 
   async exec(message) {
-    if (musicCheck(message)) return;
+    if (musicCheck(message)) return false;
 
     message.guild.musicData.queue = 0;
     message.guild.musicData.loop = 'off';

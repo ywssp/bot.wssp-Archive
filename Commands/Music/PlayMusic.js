@@ -3,7 +3,7 @@ const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
-const { createSongObj } = require('../../Functions/MusicFunctions.js');
+const { createSongObj, } = require('../../Functions/MusicFunctions.js');
 
 const youtube = new Youtube(process.env.YOUTUBE);
 

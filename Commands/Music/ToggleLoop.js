@@ -24,11 +24,11 @@ class LoopCommand extends Command {
       },
     };
 
-    return { loopType };
+    return { loopType, };
   }
 
   exec(message, args) {
-    if (musicCheck(message)) return;
+    if (musicCheck(message)) return false;
 
     message.guild.musicData.loop = args.loopType.match[0];
     return message.react('🔂');

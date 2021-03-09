@@ -14,7 +14,7 @@ class TestCommand extends Command {
       'Bot works. Continue using commands',
       'Present',
       'Status: Online',
-      'Mic Test',
+      'Mic Test'
     ];
     const sent = await message.channel.send('Loading...');
     const timeDiff =

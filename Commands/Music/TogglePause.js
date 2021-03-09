@@ -11,7 +11,7 @@ class PauseCommand extends Command {
   }
 
   exec(message) {
-    if (musicCheck(message)) return;
+    if (musicCheck(message)) return false;
 
     if (message.guild.musicData.songDispatcher.paused) {
       message.guild.musicData.songDispatcher.resume();

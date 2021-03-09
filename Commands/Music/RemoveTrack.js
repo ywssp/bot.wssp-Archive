@@ -23,7 +23,7 @@ class RemoveCommand extends Command {
           }),
       },
     };
-    return { songNumber };
+    return { songNumber, };
   }
 
   exec(message, args) {
@@ -32,9 +32,7 @@ class RemoveCommand extends Command {
         queue: true,
         songNumber: args.songNumber,
       })
-    ) {
-      return;
-    }
+    ) return false;
 
     const removedSong = message.guild.musicData.queue.splice(
       args.songNumber - 1,

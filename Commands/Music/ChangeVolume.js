@@ -34,7 +34,7 @@ class VolumeCommand extends Command {
   }
 
   exec(message, args) {
-    if (musicCheck(message)) return;
+    if (musicCheck(message)) return false;
 
     const volume = args.volume / 50;
     let volumeIndex = Math.ceil(volume * 5 - 1);

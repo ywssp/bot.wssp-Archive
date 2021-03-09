@@ -26,6 +26,7 @@ class TriviaCommand extends Command {
         ) {
           return phrase.toLowerCase();
         }
+				
         return null;
       },
       'Category',
