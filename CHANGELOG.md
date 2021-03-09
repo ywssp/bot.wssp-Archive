@@ -2,8 +2,8 @@
 
 ## General
 
--   All Files now use strict mode
 -   Added some NPM modules
+-   All Files now use strict mode
 -   Default command settings are now defined
 
 
