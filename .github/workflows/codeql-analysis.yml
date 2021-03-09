@@ -18,6 +18,8 @@ jobs:
       - 
         name: "Perform CodeQL Analysis"
         uses: github/codeql-action/analyze@v1
+      - name: Codacy Coverage Reporter
+        uses: codacy/codacy-coverage-reporter-action@0.2.0
     strategy: 
       fail-fast: false
       matrix: 
