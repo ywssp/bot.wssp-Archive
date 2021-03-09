@@ -3,7 +3,7 @@ const { Command } = require('discord-akairo');
 class ReloadCommand extends Command {
   constructor() {
     super('reload', {
-      aliases: ['reload',],
+      aliases: ['reload'],
       args: [
         {
           id: 'commandID',
