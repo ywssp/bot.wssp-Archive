@@ -20,8 +20,8 @@
 -   All commands in this category are now restricted to guilds
 -   Merged `PauseMusic.js` and `ResumeMusic.js` into `TogglePause.js`
 -   Merged `SkipTrack.js` and `SkipToTrack.js`
--   Revamped how the `loop` command works
 -   `play` command no longer searches for 5 videos and instead plays the first video immediately
+-   Revamped how the `loop` command works
 -   Some functions in `PlayMusic.js` are moved to `./Functions/MusicFunctions.js`
 -   `volume`, `queue`, `nowplaying`, and `play` now display the music player settings
 
