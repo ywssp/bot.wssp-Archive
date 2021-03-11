@@ -1,3 +1,4 @@
+'use strict';
 const { Listener } = require('discord-akairo');
 const activities = require('../Others/Activities.js');
 

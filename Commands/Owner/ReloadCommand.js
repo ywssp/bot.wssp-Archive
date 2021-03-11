@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 
 class ReloadCommand extends Command {
@@ -16,7 +17,7 @@ class ReloadCommand extends Command {
   }
 
   exec(message, args) {
-    if (args.commandID == 'all') {
+    if (args.commandID === 'all') {
       this.handler.reloadAll();
       return message.channel.send(
         `Reloaded ${this.handler.modules.map((m) => m).length} command(s)!`
@@ -29,7 +30,7 @@ class ReloadCommand extends Command {
       try {
         const category = this.handler.categories
           .map((c) => c)
-          .filter((c) => c == args.commandID)[0];
+          .filter((c) => c === args.commandID)[0];
         category.reloadAll();
 
         return message.channel.send(

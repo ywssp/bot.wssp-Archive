@@ -1,3 +1,4 @@
+'use strict';
 // Rename this to 'Activities.js'
 module.exports = [
   {

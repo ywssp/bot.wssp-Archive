@@ -1,3 +1,4 @@
+'use strict';
 const { Command, Argument } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
@@ -35,7 +36,9 @@ class VolumeCommand extends Command {
   }
 
   exec(message, args) {
-    if (musicCheck(message)) { return false };
+    if (musicCheck(message)) {
+      return false;
+    }
 
     const volume = args.volume / 50;
     let volumeIndex = Math.ceil((volume * 5) - 1);

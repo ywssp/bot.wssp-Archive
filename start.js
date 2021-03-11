@@ -1,3 +1,5 @@
+'use strict';
+require('dotenv').config();
 const http = require('http');
 
 const server = http.createServer((req, res) => {
@@ -53,8 +55,7 @@ class Client extends AkairoClient {
       prefix: process.env.PREFIX.split(/|/),
       argumentDefaults: {
         retries: 2,
-        modifyStart: (embed) =>
-          (embed.description += 'Type `cancel` to cancel the command'),
+        modifyStart: (embed) => embed.description += 'Type `cancel` to cancel the command',
         timeout: (message) =>
           createEmbed(message, 'error', {
             description: 'The prompt time ran out',

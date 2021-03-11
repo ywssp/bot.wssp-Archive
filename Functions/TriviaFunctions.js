@@ -1,10 +1,11 @@
+'use strict';
 const fetch = require('node-fetch');
 const createEmbed = require('./EmbedCreator.js');
 
 module.exports = {
   fetchCategories: async () => {
     let categories = await fetch(
-      `https://opentdb.com/api_category.php`
+      'https://opentdb.com/api_category.php'
     ).then((response) => response.json());
     categories = categories.trivia_categories;
     const output = [''];

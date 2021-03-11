@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
@@ -32,7 +33,7 @@ class RemoveCommand extends Command {
         queue: true,
         songNumber: args.songNumber,
       })
-    ) { return false };
+    ) { return false; }
 
     const removedSong = message.guild.musicData.queue.splice(
       args.songNumber - 1,

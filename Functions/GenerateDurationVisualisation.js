@@ -1,3 +1,4 @@
+'use strict';
 const { formatDuration } = require('./MusicFunctions.js');
 
 module.exports = (message, video) => {
