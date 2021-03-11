@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
@@ -18,7 +19,7 @@ class NowPlayingCommand extends Command {
         vc: false,
         sameVC: false,
       })
-    ) { return false };
+    ) { return false; }
 
     const playing = message.guild.musicData.nowPlaying;
     const { musicData } = message.guild;

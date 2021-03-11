@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -11,9 +12,9 @@ class ClearCommand extends Command {
   }
 
   exec(message) {
-    if (musicCheck(message)) { return false} ;
+    if (musicCheck(message)) { return false; }
 
-    message.guild.musicData.queue = 0;
+    message.guild.musicData.queue.length = 0;
 
     return message.react('🧹');
   }

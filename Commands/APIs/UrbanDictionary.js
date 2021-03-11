@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const fetch = require('node-fetch');
 const querystring = require('querystring');
@@ -27,8 +28,7 @@ class UrbanCommand extends Command {
   }
 
   async exec(message, args) {
-    const trim = (str, max) =>
-      str.length > max ? `${str.slice(0, max - 3)}...` : str;
+    const trim = (str, max) => str.length > max ? `${str.slice(0, max - 3)}...` : str;
 
     const query = querystring.stringify({ term: args.query });
 

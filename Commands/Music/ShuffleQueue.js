@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -15,7 +16,7 @@ class ShuffleCommand extends Command {
       musicCheck(message, {
         queue: true,
       })
-    ) { return false };
+    ) { return false; }
 
     const shuffle = ([...arr]) => {
       let m = arr.length;

@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const fetch = require('node-fetch');
 const createEmbed = require('../../Functions/EmbedCreator.js');

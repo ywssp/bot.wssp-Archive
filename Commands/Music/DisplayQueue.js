@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const _ = require('lodash');
 const createEmbed = require('../../Functions/EmbedCreator.js');
@@ -19,7 +20,7 @@ class QueueCommand extends Command {
         sameVC: false,
         queue: true,
       })
-    ) { return false };
+    ) { return false; }
 
     const songDataset = message.guild.musicData.queue.map((song, index) => ({
       name: `${index + 1}. ${song.title}`,

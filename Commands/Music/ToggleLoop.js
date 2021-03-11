@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const createEmbed = require('../../Functions/EmbedCreator.js');
 const musicCheck = require('../../Functions/MusicCheck.js');
@@ -28,10 +29,10 @@ class LoopCommand extends Command {
   }
 
   exec(message, args) {
-    if (musicCheck(message)) { return false };
+    if (musicCheck(message)) { return false; }
 
     message.guild.musicData.loop = args.loopType.match[0];
-    
+
     return message.react('🔂');
   }
 }

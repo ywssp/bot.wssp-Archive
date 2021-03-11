@@ -2,7 +2,7 @@
 
 This is an open-source discord bot that you can invite and even suggest commands to! Pretty neat huh?
 
-UPDATE: I'm currently at school, so i cant fix bugs all the time.
+UPDATE: I'm currently at school, so i can't fix bugs all the time.
 
 ## .env contents
 
@@ -23,7 +23,7 @@ Used in [Commands/Music/PlayMusic.js](./Commands/Music/PlayMusic.js).
 
 ### process.env.PREFIX
 
-The perfix that the bot uses. Multiple prefixes are seperated using `|`
+The prefix that the bot uses. Multiple prefixes are seperated using `|`
 Used in [start.js](start.js).
 
 your `.env` file should look like this:
@@ -42,22 +42,18 @@ PREFIX='+|!|/'
 -   [discord-akairo](https://discord-akairo.github.io/#/)
 -   [Discord.js](https://discord.js.org/#/)
 
-
 ### Music Commands
 
 -   [simple-youtube-api](https://www.npmjs.com/package/simple-youtube-api)
 -   [ytd-core](https://www.npmjs.com/package/ytdl-core)
 
-
 ### Services
 
 -   [Repl.it](https://repl.it/)
 
-
 ### Others
 
 -   Other npm packages on [package.json](package.json)
-
 
 ## Credits
 

@@ -1,3 +1,4 @@
+'use strict';
 const { Command, Argument } = require('discord-akairo');
 const fetch = require('node-fetch');
 const createEmbed = require('../../Functions/EmbedCreator.js');
@@ -68,8 +69,8 @@ class TriviaCommand extends Command {
 
     const type = yield generateArgPrompt(
       (message, phrase) => {
-        if (/(any)|(multiple)|(boolean)/gi.test(phrase)) {
-          return /(any)|(multiple)|(boolean)/gi.exec(phrase)[0].toLowerCase();
+        if ((/(any)|(multiple)|(boolean)/gi).test(phrase)) {
+          return (/(any)|(multiple)|(boolean)/gi).exec(phrase)[0].toLowerCase();
         }
         return null;
       },

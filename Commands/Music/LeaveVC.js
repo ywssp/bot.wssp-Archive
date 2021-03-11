@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const musicCheck = require('../../Functions/MusicCheck.js');
 
@@ -10,10 +11,10 @@ class LeaveCommand extends Command {
     });
   }
 
-  async exec(message) {
-    if (musicCheck(message)) { return false };
+  exec(message) {
+    if (musicCheck(message)) { return false; }
 
-    message.guild.musicData.queue = 0;
+    message.guild.musicData.queue.length = 0;
     message.guild.musicData.loop = 'off';
     message.guild.musicData.songDispatcher.end();
 

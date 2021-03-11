@@ -1,3 +1,4 @@
+'use strict';
 const { Command } = require('discord-akairo');
 const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
@@ -32,10 +33,10 @@ class PlayCommand extends Command {
     let video;
 
     // If the '--current' flag is present, get the video id of the song currently playing
-    if (/^(-c)|(--current)$/.test(searchTerm)) {
+    if ((/^(-c)|(--current)$/).test(searchTerm)) {
       video = message.guild.musicData.nowPlaying.id;
       // If the term is a playlist link, get all video ids of the playlist
-    } else if (/^.*(youtu.be\/|list=)([^#&?]*).*/.test(searchTerm)) {
+    } else if ((/^.*(youtu.be\/|list=)([^#&?]*).*/).test(searchTerm)) {
       const playlist = await youtube.getPlaylist(searchTerm).catch(() =>
         createEmbed(message, 'error', {
           description: 'The playlist cannot be found!',
@@ -53,9 +54,7 @@ class PlayCommand extends Command {
 
       video.push(playlist);
       // If the term is a video link, get the video id
-    } else if (
-      /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/.test(searchTerm)
-    ) {
+    } else if ((/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/).test(searchTerm)) {
       video = searchTerm
         .replace(/(>|<)/gi, '')
         .split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)[2]
@@ -192,9 +191,9 @@ class PlayCommand extends Command {
         sameVC: false,
         playing: false,
       })
-    ) { return false };
+    ) { return false; }
 
-    if (args.error) { return false };
+    if (args.error) { return false; }
 
     if (typeof args.video === 'string') {
       let video;
@@ -299,6 +298,7 @@ class PlayCommand extends Command {
         });
       }
     }
+    return 0;
   }
 }
 

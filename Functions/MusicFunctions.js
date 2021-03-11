@@ -1,3 +1,4 @@
+'use strict';
 module.exports = {
   unescapeHTML(str) {
     return str.replace(
@@ -7,7 +8,7 @@ module.exports = {
           '&amp;': '&',
           '&lt;': '<',
           '&gt;': '>',
-          '&#39;': `'`,
+          '&#39;': '\'',
           '&quot;': '"',
         }[tag] || tag)
     );
