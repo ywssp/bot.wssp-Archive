@@ -2,6 +2,7 @@
 
 This is an open-source discord bot. It's written in JavaScript and uses the [discord-akairo](https://discord-akairo.github.io/#/) framework.
 This repo is an archive of versions 1.0.0 to 3.1.0 because i filled this repo with unnecessary commits.
+[New Repo](https://github.com/ywssp/bot.wssp)
 
 ## History
 - v3.1.0 - The version of this repo
