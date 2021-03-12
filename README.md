@@ -6,10 +6,10 @@ This repo is an archive of versions 1.0.0 to 3.1.0 because i filled this repo wi
 
 ## History
 - v3.1.0 - The version of this repo
-- [v3.0.0](https://github.com/ywssp/bot.wssp/tree/13d7411a923f60e90ecf37a5d7b3e50f300bd6f7) - Revision of music commands
-- [v2.1.0](https://github.com/ywssp/bot.wssp/tree/eddb49ab5ab7e3147d912d2dac27f9bfccd1d374) - Addition of trivia.js
-- [v2.0.0](https://github.com/ywssp/bot.wssp/tree/8a25d7656d77c06e28a3df23f677fa031c2d7fec) - Resume of updates
-- [Updates from 2020](https://github.com/ywssp/bot.wssp/commits/stable?after=07157282b09c39dbec6e1fc92454ee641af46aaa+955&branch=stable)
+- [v3.0.0](https://github.com/ywssp/bot.wssp-archive/tree/13d7411a923f60e90ecf37a5d7b3e50f300bd6f7) - Revision of music commands
+- [v2.1.0](https://github.com/ywssp/bot.wssp-archive/tree/eddb49ab5ab7e3147d912d2dac27f9bfccd1d374) - Addition of trivia.js
+- [v2.0.0](https://github.com/ywssp/bot.wssp-archive/tree/8a25d7656d77c06e28a3df23f677fa031c2d7fec) - Resume of updates
+- [Updates from 2020](https://github.com/ywssp/bot.wssp-archive/commits/stable?after=07157282b09c39dbec6e1fc92454ee641af46aaa+955&branch=stable)
 
 ## .env contents
 
